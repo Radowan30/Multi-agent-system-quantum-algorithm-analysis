@@ -1,0 +1,21 @@
+# ==============================================================================
+# Phase 4 (LLaMA 3.1 variant) — Merge LoRA adapter into a standalone model.
+#
+# Run AFTER training:
+#   cd LLaMA-Factory && \
+#     llamafactory-cli export "../Multi Agent System Phase 4/merge_phase4_llama31_alpha32.yaml"
+# ==============================================================================
+
+### model
+model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
+adapter_name_or_path: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/lora/Phase4_alpha32
+template: llama3
+finetuning_type: lora
+trust_remote_code: true
+resize_vocab: true                        # match training — resize before applying adapter
+
+### export
+export_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/merged/Phase4_alpha32
+export_size: 5
+export_device: cpu
+export_legacy_format: false

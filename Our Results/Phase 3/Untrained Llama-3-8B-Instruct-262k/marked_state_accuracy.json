@@ -1,0 +1,29 @@
+{
+  "mode": "full",
+  "circuit_source": "paper",
+  "n_min": 2,
+  "n_max": 19,
+  "rule": "strict conditional \u2014 point reported only if A1 correct on every circuit at n",
+  "per_n": {
+    "2": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 1
+    },
+    "3": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 2
+    },
+    "4": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 3
+    },
+    "6": {
+      "accuracy": 0.0,
+      "correct": 0,
+      "total": 3
+    }
+  }
+}

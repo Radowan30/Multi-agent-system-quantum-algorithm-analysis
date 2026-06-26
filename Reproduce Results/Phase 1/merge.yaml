@@ -1,0 +1,29 @@
+# ==============================================================================
+# GroverGPT+_alpha32 — LoRA merge / export config.
+#
+# Merges the trained LoRA adapter (q_proj/v_proj LoRA + the full trained
+# embed_tokens/lm_head from modules_to_save) into a single standalone model,
+# which the vLLM evaluation pipeline then loads.
+#
+# Run AFTER training finishes:
+#   cd LLaMA-Factory && llamafactory-cli export ../merge_grovergpt_plus_alpha32.yaml
+#
+# Every key below was verified to be a valid LLaMA-Factory argument
+# (ModelArguments / DataArguments / FinetuningArguments).
+# ==============================================================================
+
+### model
+model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Meta-Llama-3-8B-Instruct
+adapter_name_or_path: /home/quantum-user/radowan/final_year_project/saves/Meta-Llama-3-8B-Instruct/lora/GroverGPT+_alpha32
+template: llama3
+finetuning_type: lora
+trust_remote_code: true
+resize_vocab: true            # resize base embeddings (128256) to the extended 139-token vocab
+                              # BEFORE applying the adapter, so the adapter's 128448-row
+                              # embed_tokens/lm_head (modules_to_save) load without a size mismatch.
+
+### export
+export_dir: /home/quantum-user/radowan/final_year_project/saves/Meta-Llama-3-8B-Instruct/merged/GroverGPT+_alpha32
+export_size: 5                # shard size in GB (output may be sharded — the eval handles that fine)
+export_device: cpu            # merge on CPU — pure weight arithmetic, avoids GPU memory pressure
+export_legacy_format: false   # save as safetensors (required by the vLLM eval)

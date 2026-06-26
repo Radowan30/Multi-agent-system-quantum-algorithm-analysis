@@ -1,0 +1,232 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Theme tokens (CSS variables) ────────────────────────────────────────── */
+
+:root {
+  /* Light theme — warm off-white with cool accents */
+  --bg-base:       250 250 255;  /* faint violet-tinted white */
+  --bg-panel:      255 255 255;
+  --bg-elev:       244 242 251;
+  --bg-subtle:     239 236 247;
+  --border-subtle: 226 222 240;
+  --border-strong: 200 192 222;
+  --text-primary:   24 22  46;
+  --text-secondary: 80 76 112;
+  --text-muted:    139 137 166;
+
+  --agent-1: 8 145 178;     /* deep cyan, Agent 1 — Oracle Extractor */
+  --agent-2: 109 40 217;    /* indigo-violet, Agent 2 — Marked-State Identifier */
+  --agent-3: 217 119  6;    /* amber, Agent 3 — Probability Distribution */
+  --result:    5 150 105;   /* emerald, final probability-distribution result */
+  --accent-cyan:    8 145 178;
+  --accent-violet:  124  58 237;
+  --accent-amber:   217 119   6;
+  --accent-magenta: 192  38 211;
+
+  /* Background aurora colour stops (used in cosmic-mesh class). */
+  --aurora-a: 167 139 250;  /* violet */
+  --aurora-b:  34 211 238;  /* cyan */
+  --aurora-c: 251 191  36;  /* amber */
+  --aurora-opacity: 0.10;
+}
+
+.dark {
+  /* Dark theme — deep indigo cosmos */
+  --bg-base:        11   8  23;
+  --bg-panel:       22  18  46;
+  --bg-elev:        31  26  61;
+  --bg-subtle:      18  14  38;
+  --border-subtle:  44  37  82;
+  --border-strong:  72  60 122;
+  --text-primary:  236 234 248;
+  --text-secondary: 157 155 190;
+  --text-muted:     109 105 144;
+
+  --agent-1:  34 211 238;
+  --agent-2: 167 139 250;
+  --agent-3: 251 191  36;
+  --result:   52 211 153;
+  --accent-cyan:    34 211 238;
+  --accent-violet: 167 139 250;
+  --accent-amber:  251 191  36;
+  --accent-magenta: 232 121 249;
+
+  --aurora-opacity: 0.20;
+}
+
+/* ─── Base + global ───────────────────────────────────────────────────────── */
+
+@layer base {
+  html {
+    color-scheme: light dark;
+  }
+  body {
+    @apply bg-bg-base text-text-primary font-sans antialiased;
+    transition: background-color 320ms ease, color 320ms ease;
+  }
+  /* Slim themed scrollbars */
+  ::-webkit-scrollbar { @apply w-2 h-2; }
+  ::-webkit-scrollbar-track  { background: rgb(var(--bg-base)); }
+  ::-webkit-scrollbar-thumb  { background: rgb(var(--border-strong) / 0.6); border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: rgb(var(--accent-violet) / 0.55); }
+  *, *::before, *::after { transition: border-color 200ms ease, background-color 200ms ease, color 200ms ease; }
+  ::selection { background-color: rgb(var(--accent-violet) / 0.30); color: inherit; }
+}
+
+/* ─── Reusable component classes ──────────────────────────────────────────── */
+
+@layer components {
+  .card {
+    @apply rounded-2xl border border-border-subtle bg-bg-panel shadow-card;
+  }
+  .card-glass {
+    @apply rounded-2xl border border-border-subtle bg-bg-panel/80 backdrop-blur-md shadow-card;
+  }
+  .input {
+    @apply w-full px-3 py-2 rounded-lg bg-bg-elev border border-border-subtle text-text-primary text-sm font-mono outline-none transition;
+  }
+  .input:focus {
+    border-color: rgb(var(--accent-cyan) / 0.55);
+    box-shadow: 0 0 0 3px rgb(var(--accent-cyan) / 0.12);
+  }
+  .btn-ghost {
+    @apply px-2.5 py-2 rounded-lg text-text-secondary hover:text-text-primary hover:bg-bg-subtle transition;
+  }
+  .btn-primary {
+    @apply px-4 py-2 rounded-lg text-sm font-medium transition border;
+    background-color: rgb(var(--accent-cyan) / 0.14);
+    color: rgb(var(--accent-cyan));
+    border-color: rgb(var(--accent-cyan) / 0.30);
+  }
+  .btn-primary:hover {
+    background-color: rgb(var(--accent-cyan) / 0.22);
+  }
+  .chip {
+    @apply inline-flex items-center gap-1.5 text-[10px] uppercase tracking-[0.16em] font-semibold px-2 py-0.5 rounded-full;
+  }
+}
+
+/* ─── Cosmic-mesh background ──────────────────────────────────────────────── */
+/* Layered radial gradients form a soft aurora that works for both themes
+ * (intensity controlled by --aurora-opacity). The shapes are absolutely
+ * positioned in a fixed container so they don't move when the page scrolls. */
+
+.cosmic-mesh {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-color: rgb(var(--bg-base));
+  overflow: hidden;
+  pointer-events: none;
+}
+.cosmic-mesh::before,
+.cosmic-mesh::after,
+.cosmic-mesh > .blob {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: var(--aurora-opacity);
+  will-change: transform;
+  animation: aurora 18s ease-in-out infinite;
+}
+.cosmic-mesh::before {
+  width: 60vmax; height: 60vmax;
+  top: -20vmax; left: -10vmax;
+  background: rgb(var(--aurora-a));
+}
+.cosmic-mesh::after {
+  width: 55vmax; height: 55vmax;
+  bottom: -15vmax; right: -10vmax;
+  background: rgb(var(--aurora-b));
+  animation-delay: -6s;
+}
+.cosmic-mesh > .blob {
+  width: 40vmax; height: 40vmax;
+  top: 35vmax; left: 40vmax;
+  background: rgb(var(--aurora-c));
+  animation-delay: -12s;
+}
+
+/* ─── Markdown rendering inside agent sections ────────────────────────────── */
+
+.md {
+  @apply text-text-primary leading-relaxed text-[0.9rem];
+}
+.md > * + * { @apply mt-3; }
+
+.md p          { @apply whitespace-pre-wrap; }
+.md strong     { @apply font-semibold; color: rgb(var(--text-primary)); }
+.md em         { @apply italic text-text-secondary; }
+
+.md hr {
+  @apply my-5 border-0 h-px;
+  background: linear-gradient(90deg, transparent, rgb(var(--border-strong)), transparent);
+}
+
+.md h1, .md h2, .md h3, .md h4 {
+  @apply font-display font-semibold tracking-tight mt-5 mb-2 text-text-primary;
+}
+.md h1 { @apply text-base; }
+.md h2 { @apply text-sm; }
+.md h3 {
+  @apply text-[0.72rem] uppercase tracking-[0.18em] font-semibold mt-5 mb-2;
+  color: rgb(var(--text-secondary));
+}
+.md h3::before {
+  content: "";
+  display: inline-block;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  margin-right: 0.55rem;
+  vertical-align: middle;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+.md ol, .md ul { @apply pl-5 my-3 space-y-1; }
+.md ol li      { @apply list-decimal pl-1; }
+.md ul li      { @apply list-disc pl-1; }
+.md li::marker { color: rgb(var(--text-muted)); }
+
+.md code {
+  @apply font-mono rounded px-1.5 py-0.5 text-[0.82em];
+  background: rgb(var(--bg-elev));
+  color: rgb(var(--accent-violet));
+  border: 1px solid rgb(var(--border-subtle));
+}
+.md pre {
+  @apply font-mono rounded-xl my-4 overflow-x-auto text-[0.82rem] leading-relaxed;
+  background: rgb(var(--bg-subtle));
+  border: 1px solid rgb(var(--border-subtle));
+  padding: 0.9rem 1rem;
+}
+.md pre code {
+  @apply bg-transparent border-0 p-0 text-text-primary;
+}
+
+/* ─── Per-agent accent colour variables (consumed by AgentSection) ────────── */
+
+[data-agent="1"] { --agent-color: var(--agent-1); }
+[data-agent="2"] { --agent-color: var(--agent-2); }
+[data-agent="3"] { --agent-color: var(--agent-3); }
+[data-result]    { --agent-color: var(--result);  }
+
+.agent-rail {
+  border-left: 2px solid rgb(var(--agent-color) / 0.45);
+}
+.agent-glow {
+  box-shadow: 0 0 0 1px rgb(var(--agent-color) / 0.18), 0 12px 32px -16px rgb(var(--agent-color) / 0.40);
+}
+.agent-text   { color: rgb(var(--agent-color)); }
+.agent-bg     { background-color: rgb(var(--agent-color) / 0.10); }
+.agent-border { border-color: rgb(var(--agent-color) / 0.30); }
+
+/* Subtle pulse for the in-flight agent badge */
+@keyframes agent-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgb(var(--agent-color) / 0.45); }
+  50%      { box-shadow: 0 0 0 8px rgb(var(--agent-color) / 0.00); }
+}
+.agent-pulse { animation: agent-pulse 1.8s ease-out infinite; }

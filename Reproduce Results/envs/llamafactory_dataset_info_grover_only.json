@@ -1,0 +1,42 @@
+{
+  "Grover_Oracle_2_10_MMS": {
+    "file_name": "Grover_Oracle_2_10_MMS.json",
+    "columns": {
+      "prompt": "input",
+      "response": "output",
+      "system": "instruction"
+    }
+  },
+  "Grover_FullCircuit_2_7_MMS": {
+    "file_name": "Grover_FullCircuit_2_7_MMS.json",
+    "columns": {
+      "prompt": "input",
+      "response": "output",
+      "system": "instruction"
+    }
+  },
+  "Grover_Agent1_2_7_MMS": {
+    "file_name": "Grover_Agent1_2_7_MMS.json",
+    "columns": {
+      "prompt": "input",
+      "response": "output",
+      "system": "instruction"
+    }
+  },
+  "Grover_Agent2_2_7_MMS": {
+    "file_name": "Grover_Agent2_2_7_MMS.json",
+    "columns": {
+      "prompt": "input",
+      "response": "output",
+      "system": "instruction"
+    }
+  },
+  "Grover_Agent3_2_7_MMS": {
+    "file_name": "Grover_Agent3_2_7_MMS.json",
+    "columns": {
+      "prompt": "input",
+      "response": "output",
+      "system": "instruction"
+    }
+  }
+}

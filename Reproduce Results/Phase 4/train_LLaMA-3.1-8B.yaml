@@ -1,0 +1,81 @@
+# ==============================================================================
+# Phase 4 (LLaMA 3.1 variant) — Fine-tune LLaMA 3.1 8B Instruct on the three
+# agent-decomposed datasets, jointly, in a single training session.
+#
+# All hyperparameters identical to train_phase4_alpha32.yaml (the Gradient
+# variant) — only the base model differs. This is the second base-model
+# datapoint for the Phase 4 robustness comparison.
+#
+# Base model: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
+#   - Reused from Phase 2 — already has the patches applied:
+#       * extended quantum-native tokenizer (128395 vocab = 128256 + 139)
+#       * simple llama3 chat template (Phase 1's template; original Meta
+#         template kept as chat_template_llama31_default_backup.jinja)
+#       * generation_config.json eos_token_id = [128001, 128009]
+#         (128008 / <|eom_id|> removed — Phase 2 confirmed this prevents
+#         training-label masking weirdness with LLaMA-Factory's llama3 template)
+#
+# Run:
+#   cd LLaMA-Factory && \
+#     llamafactory-cli train "../Multi Agent System Phase 4/train_phase4_llama31_alpha32.yaml"
+# ==============================================================================
+
+### model
+model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
+trust_remote_code: true
+resize_vocab: true                        # 128256 → 128395 (extended quantum-native tokenizer)
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 8                              # GroverGPT+ Table II
+lora_alpha: 32                            # GroverGPT+ Table II
+lora_dropout: 0.0
+lora_target: q_proj,v_proj
+additional_target: embed_tokens,lm_head   # train+save quantum-token embeddings
+disable_shuffling: true                   # preserve curriculum order
+
+### dataset
+dataset: Grover_Agent1_2_7_MMS,Grover_Agent2_2_7_MMS,Grover_Agent3_2_7_MMS
+dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+template: llama3
+cutoff_len: 4000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/lora/Phase4_alpha32
+logging_steps: 10
+save_steps: 50
+save_total_limit: 2
+plot_loss: true
+overwrite_output_dir: true
+report_to: none
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 2.0e-5
+num_train_epochs: 10.0
+lr_scheduler_type: cosine
+warmup_steps: 20
+weight_decay: 0.0
+max_grad_norm: 1.0
+optim: adamw_torch_fused
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_epsilon: 1.0e-8
+fp16: true
+seed: 42
+dataloader_num_workers: 4
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 50
+load_best_model_at_end: true
+metric_for_best_model: loss
+greater_is_better: false

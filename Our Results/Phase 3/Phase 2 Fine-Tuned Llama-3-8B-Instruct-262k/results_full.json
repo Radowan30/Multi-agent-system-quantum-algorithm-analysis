@@ -1,0 +1,326 @@
+{
+  "2": {
+    "n": 2,
+    "mode": "full",
+    "n_circuits": 1,
+    "n_parse_failures": 1,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "3": {
+    "n": 3,
+    "mode": "full",
+    "n_circuits": 2,
+    "n_parse_failures": 2,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "4": {
+    "n": 4,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 1,
+    "sa": [
+      0.3333333333333333,
+      0.5773502691896257
+    ],
+    "cf": [
+      0.16021982828776044,
+      0.2775088829743623
+    ],
+    "cf_renorm": [
+      0.16021982828776044,
+      0.2775088829743623
+    ]
+  },
+  "5": {
+    "n": 5,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "6": {
+    "n": 6,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 0,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "7": {
+    "n": 7,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "8": {
+    "n": 8,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "9": {
+    "n": 9,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "10": {
+    "n": 10,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "11": {
+    "n": 11,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "12": {
+    "n": 12,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "13": {
+    "n": 13,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "14": {
+    "n": 14,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "15": {
+    "n": 15,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "16": {
+    "n": 16,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "17": {
+    "n": 17,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "18": {
+    "n": 18,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  },
+  "19": {
+    "n": 19,
+    "mode": "full",
+    "n_circuits": 3,
+    "n_parse_failures": 3,
+    "sa": [
+      0.0,
+      0.0
+    ],
+    "cf": [
+      0.0,
+      0.0
+    ],
+    "cf_renorm": [
+      0.0,
+      0.0
+    ]
+  }
+}

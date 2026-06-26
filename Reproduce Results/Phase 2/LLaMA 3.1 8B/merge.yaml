@@ -1,0 +1,21 @@
+# ==============================================================================
+# Phase 2 — Merge LoRA adapter (alpha32) into standalone model for vLLM eval.
+#
+# Run AFTER training finishes:
+#   cd LLaMA-Factory && \
+#     llamafactory-cli export "../Fine-tuned Llama 3.1 8B/merge_llama31_alpha32.yaml"
+# ==============================================================================
+
+### model
+model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
+adapter_name_or_path: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/lora/Llama31_alpha32
+template: llama3
+finetuning_type: lora
+trust_remote_code: true
+resize_vocab: true
+
+### export
+export_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/merged/Llama31_alpha32
+export_size: 5
+export_device: cpu
+export_legacy_format: false

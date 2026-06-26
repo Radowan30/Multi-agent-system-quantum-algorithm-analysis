@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.venv/
+venv/
+venv-*/
+.python-version
+
+# Node
+node_modules/
+dist/
+.parcel-cache/
+.vite/
+*.log
+
+# Models, datasets, results — too large for git, recreate via Reproduce Results
+saves/
+models/
+data_MMS/
+*.safetensors
+*.bin
+*.gguf
+
+# OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

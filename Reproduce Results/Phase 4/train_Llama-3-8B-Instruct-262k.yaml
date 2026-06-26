@@ -1,0 +1,88 @@
+# ==============================================================================
+# Phase 4 — Fine-tune Llama-3-8B-Instruct-262k on the three agent-decomposed
+# datasets, jointly, in a single training session.
+#
+# All hyperparameters mirror the GroverGPT+ paper's Table II (verified
+# line-by-line against the Phase 1/2 alpha32 configs and training_args.bin).
+# Only the dataset list changes: three agent-specific datasets concatenated
+# into one corpus (LLaMA-Factory's `dataset:` field accepts comma-separated
+# names and concatenates them, mirroring Phase 1's joint Grover_FullCircuit +
+# Grover_Oracle training).
+#
+# Base model: /home/quantum-user/radowan/models/Llama-3-8B-Instruct-262k
+#   - Stock Gradient-262k weights (NOT the Phase 2 LoRA-merged variant).
+#   - Tokenizer at this path is already extended to the 139 quantum-native
+#     tokens (vocab 128395); `resize_vocab: true` grows the model embeddings
+#     to fit.
+#   - Chat template at this path is the simple llama3 header template that
+#     matches LLaMA-Factory's internal template (avoids the Phase 2 chat-
+#     template mismatch bug).
+#
+# Run:
+#   cd LLaMA-Factory && \
+#     llamafactory-cli train "../Multi Agent System Phase 4/train_phase4_alpha32.yaml"
+# ==============================================================================
+
+### model
+model_name_or_path: /home/quantum-user/radowan/models/Llama-3-8B-Instruct-262k
+trust_remote_code: true
+resize_vocab: true                        # 128256 → 128395 (extended quantum-native tokenizer)
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 8                              # Table II = 8
+lora_alpha: 32                            # Table II = 32
+lora_dropout: 0.0                         # Table II = 0.0
+lora_target: q_proj,v_proj                # Table II
+additional_target: embed_tokens,lm_head   # train+save quantum-token embeddings (modules_to_save)
+disable_shuffling: true                   # Table II = Disabled — preserve curriculum order
+
+### dataset
+# Joint training: all three agent datasets concatenated in a single SFT run.
+# Each agent's input/output format matches what the Phase 3 orchestrator
+# sends/parses at inference, so the merged model can serve all three agents
+# from one weight checkpoint.
+dataset: Grover_Agent1_2_7_MMS,Grover_Agent2_2_7_MMS,Grover_Agent3_2_7_MMS
+dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+template: llama3                          # Table II
+cutoff_len: 4000                          # Table II = 4000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3-8B-Instruct-262k/lora/Phase4_alpha32
+logging_steps: 10
+save_steps: 50                            # Table II = every 50 steps
+save_total_limit: 2
+plot_loss: true
+overwrite_output_dir: true
+report_to: none
+
+### train
+per_device_train_batch_size: 1            # Table II = 1
+gradient_accumulation_steps: 8            # Table II = 8 (effective batch = 8)
+learning_rate: 2.0e-5                     # Table II = 2e-5
+num_train_epochs: 10.0                    # Table II = 10
+lr_scheduler_type: cosine                 # Table II = Cosine
+warmup_steps: 20                          # Table II = 20
+weight_decay: 0.0                         # Table II = 0.0
+max_grad_norm: 1.0                        # Table II = 1.0
+optim: adamw_torch_fused                  # Table II = "AdamW" (fused kernel — same math)
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_epsilon: 1.0e-8
+fp16: true                                # Table II = FP16
+seed: 42                                  # Table II = 42
+dataloader_num_workers: 4
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.1                             # Table II = 10%
+per_device_eval_batch_size: 1
+eval_strategy: steps                      # Table II = every 50 steps
+eval_steps: 50
+load_best_model_at_end: true
+metric_for_best_model: loss
+greater_is_better: false

@@ -1,0 +1,84 @@
+# ==============================================================================
+# GroverGPT+ retraining config — reproduces Supplementary Table II of the paper.
+#
+# Every value below was VERIFIED against the original run's artifacts
+# (training_args.bin, adapter_config.json, the auto-generated adapter README),
+# or against the paper. Every key was verified to be a valid LLaMA-Factory
+# argument (ModelArguments / DataArguments / FinetuningArguments / TrainingArguments).
+#
+# Findings vs. the paper's Table II:
+#   - lora_alpha: the original run used 16 (verified: adapter_config.json); the
+#     paper states 32. CHANGED to 32 here.
+#   - disable_shuffling: not recorded in any artifact (it is a LLaMA-Factory
+#     FinetuningArgument, not saved in training_args.bin). LLaMA-Factory's
+#     default is to shuffle, so the original run most likely shuffled, whereas
+#     Table II says "Disabled". Set to the paper's value (true) here.
+#   - Every other setting already matched the paper and is kept identical.
+#
+# Prerequisite (verified satisfied): models/Meta-Llama-3-8B-Instruct/ holds the
+# 139-token quantum-native tokenizer; `resize_vocab: true` grows the embeddings.
+#
+# Run:  cd LLaMA-Factory && llamafactory-cli train ../train_grovergpt_plus_alpha32.yaml
+# ==============================================================================
+
+### model
+model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Meta-Llama-3-8B-Instruct
+trust_remote_code: true
+resize_vocab: true                        # extend embeddings to the 139-token vocab
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 8                              # Table II = 8       | verified: adapter_config.json
+lora_alpha: 32                            # Table II = 32      | CHANGED — original run used 16 (adapter_config.json)
+lora_dropout: 0.0                         #                    | verified: adapter_config.json
+lora_target: q_proj,v_proj                # Table II           | verified: adapter_config.json
+additional_target: embed_tokens,lm_head   # train+save quantum-token embeddings | verified: adapter_config.json (modules_to_save)
+disable_shuffling: true                   # Table II = Disabled| original value not recorded (LF default = shuffled); set to paper value
+
+### dataset
+dataset: Grover_FullCircuit_2_7_MMS,Grover_Oracle_2_10_MMS
+dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+template: llama3
+cutoff_len: 4000                          # Table II = 4000    | original: no truncation, confirmed via total_flos (longest example = 3684)
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: /home/quantum-user/radowan/final_year_project/saves/Meta-Llama-3-8B-Instruct/lora/GroverGPT+_alpha32
+logging_steps: 10                         # logging granularity only — no effect on training
+save_steps: 50                            # verified: training_args.bin
+save_total_limit: 2                       # verified: training_args.bin
+plot_loss: true
+overwrite_output_dir: true
+report_to: none
+
+### train
+per_device_train_batch_size: 1            # Table II = 1       | verified: training_args.bin
+gradient_accumulation_steps: 8            # Table II = 8       | verified: training_args.bin (effective batch = 8)
+learning_rate: 2.0e-5                     # Table II = 2e-5    | verified: training_args.bin
+num_train_epochs: 10.0                    # Table II = 10      | verified: training_args.bin
+lr_scheduler_type: cosine                 # Table II = Cosine  | verified: training_args.bin
+warmup_steps: 20                          # Table II = 20      | verified: training_args.bin
+weight_decay: 0.0                         # Table II = 0.0     | verified: training_args.bin
+max_grad_norm: 1.0                        # Table II = 1.0     | verified: training_args.bin
+optim: adamw_torch_fused                  # Table II = "AdamW" | verified: training_args.bin
+                                          #   (HF has no bare 'adamw' optimizer; this is AdamW with a fused kernel,
+                                          #    as used by the original run. `adamw_torch` is the non-fused, numerically-equivalent option.)
+adam_beta1: 0.9                           #                    | verified: training_args.bin
+adam_beta2: 0.999                         #                    | verified: training_args.bin
+adam_epsilon: 1.0e-8                      #                    | verified: training_args.bin
+fp16: true                                # Table II = FP16    | verified: training_args.bin (fp16=True, bf16=False)
+seed: 42                                  # Table II = 42      | verified: training_args.bin
+dataloader_num_workers: 4
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.1                             # Table II = 10%     | verified: derived (~301 eval / 3004 total examples)
+per_device_eval_batch_size: 1             #                    | verified: training_args.bin
+eval_strategy: steps                      # Table II = every 50 steps | verified: training_args.bin
+eval_steps: 50                            #                    | verified: training_args.bin
+load_best_model_at_end: true              #                    | verified: training_args.bin
+metric_for_best_model: loss               #                    | verified: training_args.bin
+greater_is_better: false                  #                    | verified: training_args.bin

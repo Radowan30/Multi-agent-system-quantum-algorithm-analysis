@@ -1,0 +1,8 @@
+{
+  "mode": "full",
+  "circuit_source": "paper",
+  "n_min": 2,
+  "n_max": 19,
+  "rule": "strict conditional \u2014 point reported only if A2 correct on every circuit at n; metric is mean SA",
+  "per_n": {}
+}
