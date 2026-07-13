@@ -1,4 +1,4 @@
-import { Hexagon, Moon, Settings, Sun, Wifi, WifiOff } from "lucide-react";
+import { FileDown, Hexagon, Moon, Settings, Sun, Wifi, WifiOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { pingProxy } from "../lib/api";
 import type { Theme } from "../lib/theme";
@@ -9,9 +9,13 @@ interface HeaderProps {
   onSettingsChange: (s: ApiSettings) => void;
   theme: Theme;
   onThemeChange: (t: Theme) => void;
+  /** True when at least one circuit in the session has produced enough agent
+   *  output to make a report worth generating. */
+  reportAvailable: boolean;
+  onOpenReport: () => void;
 }
 
-export function Header({ settings, onSettingsChange, theme, onThemeChange }: HeaderProps) {
+export function Header({ settings, onSettingsChange, theme, onThemeChange, reportAvailable, onOpenReport }: HeaderProps) {
   const [open, setOpen] = useState(false);
   const [connected, setConnected] = useState<boolean | null>(null);
   const [draft, setDraft] = useState(settings);
@@ -89,6 +93,19 @@ export function Header({ settings, onSettingsChange, theme, onThemeChange }: Hea
             </>
           )}
         </div>
+
+        {/* Download / preview the session report */}
+        <button
+          onClick={onOpenReport}
+          disabled={!reportAvailable}
+          className="btn-ghost disabled:opacity-40 disabled:cursor-not-allowed"
+          title={reportAvailable
+            ? "View and download session analysis report"
+            : "Report becomes available once at least one circuit is analysed"}
+          aria-label="View analysis report"
+        >
+          <FileDown className="w-4 h-4" />
+        </button>
 
         {/* Theme toggle */}
         <button

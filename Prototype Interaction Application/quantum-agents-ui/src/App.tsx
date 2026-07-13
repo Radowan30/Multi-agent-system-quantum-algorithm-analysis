@@ -1,9 +1,11 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { ChatMessage } from "./components/ChatMessage";
 import { Dropzone } from "./components/Dropzone";
 import { EmptyState } from "./components/EmptyState";
 import { Header } from "./components/Header";
+import { ReportModal } from "./components/ReportModal";
 import { streamChat } from "./lib/api";
+import { buildReportData } from "./lib/pdfReport";
 import { applyTheme, getInitialTheme, type Theme } from "./lib/theme";
 import type { ApiSettings, Message } from "./lib/types";
 
@@ -35,8 +37,17 @@ export default function App() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme);
   const [messages, setMessages] = useState<Message[]>([]);
   const [streaming, setStreaming] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
+
+  // Report is available once at least one circuit has been analysed —
+  // meaning we can produce a meaningful PDF. We consider "analysed" to be
+  // "at least one agent slice has streamed in for at least one circuit".
+  const reportAvailable = useMemo(() => {
+    const data = buildReportData(messages);
+    return data.some((r) => r.agentSlices.length > 0);
+  }, [messages]);
 
   // Apply theme on mount + whenever it changes.
   useEffect(() => applyTheme(theme), [theme]);
@@ -141,6 +152,14 @@ export default function App() {
         onSettingsChange={setSettings}
         theme={theme}
         onThemeChange={setTheme}
+        reportAvailable={reportAvailable}
+        onOpenReport={() => setReportOpen(true)}
+      />
+
+      <ReportModal
+        open={reportOpen}
+        onClose={() => setReportOpen(false)}
+        messages={messages}
       />
 
       <main className="flex-1 max-w-5xl w-full mx-auto px-4 sm:px-6 pt-6 pb-6 flex flex-col gap-6 relative">

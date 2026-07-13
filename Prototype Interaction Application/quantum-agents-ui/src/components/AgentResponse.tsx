@@ -1,5 +1,5 @@
-import { Binary, Calculator, Crosshair } from "lucide-react";
-import { useMemo } from "react";
+import { Binary, Calculator, CheckCircle2, ChevronDown, ChevronUp, Crosshair } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -86,7 +86,26 @@ function Section({ section, active }: { section: ParsedSection; active: boolean 
   // Pre-process the body once.
   const body = useMemo(() => rewriteEqualsHeaders(section.body.trim()), [section.body]);
 
-  // No header yet → just stream raw content with a subtle placeholder.
+  // Per-section expand state — persists across streaming/complete transitions.
+  // • false → default view (truncated during streaming; "Analysis completed"
+  //   after streaming). This is the initial state.
+  // • true  → user has manually expanded — stay expanded even when streaming
+  //   completes; user must click Collapse to return to the compact view.
+  const [manuallyExpanded, setManuallyExpanded] = useState(false);
+
+  // Ref + effect to check whether the rendered body actually overflows the
+  // truncation cap. If it fits inside the cap there's no need for a
+  // "Show more" button.
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const [overflowing, setOverflowing] = useState(false);
+  useEffect(() => {
+    if (!bodyRef.current) return;
+    const el = bodyRef.current;
+    // scrollHeight vs clientHeight tells us if content is being clipped.
+    setOverflowing(el.scrollHeight - el.clientHeight > 4);
+  }, [body, manuallyExpanded, active]);
+
+  // Orphan sections (before agent header parses in) use a much simpler card.
   if (section.kind === "orphan" || section.agentNum === null) {
     return (
       <div className="px-4 py-3 rounded-xl bg-bg-subtle border border-border-subtle">
@@ -99,6 +118,15 @@ function Section({ section, active }: { section: ParsedSection; active: boolean 
 
   const meta = AGENT_META[section.agentNum];
   const Icon = meta.icon;
+
+  // Determine which of the four rendering modes this section is in:
+  //   streaming + not expanded → showing preview (first ~12 lines), Show more
+  //   streaming + expanded     → showing full stream, no toggle
+  //   !streaming + expanded    → showing full output, Collapse button
+  //   !streaming + not expanded → showing "Analysis completed", Expand button
+  const showCompactSummary = !active && !manuallyExpanded;
+  const showFull = manuallyExpanded;
+  const showTruncated = active && !manuallyExpanded;
 
   return (
     <section
@@ -140,19 +168,93 @@ function Section({ section, active }: { section: ParsedSection; active: boolean 
         )}
       </header>
 
-      {/* Body */}
-      <div
-        className={[
-          "card px-5 py-4",
-          active ? "agent-glow" : "",
-        ].join(" ")}
-      >
-        <article className="md">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {body || (active ? "…" : "")}
-          </ReactMarkdown>
-        </article>
-      </div>
+      {showCompactSummary ? (
+        // ── Compact "Analysis completed" strip with an Expand button ─────
+        <button
+          type="button"
+          onClick={() => setManuallyExpanded(true)}
+          className={[
+            "w-full flex items-center gap-3 px-4 py-3",
+            "card hover:bg-bg-subtle/60 transition text-left",
+          ].join(" ")}
+          aria-expanded={false}
+          aria-label="Expand agent output"
+        >
+          <CheckCircle2
+            className="w-4 h-4 agent-text flex-shrink-0"
+            strokeWidth={2}
+          />
+          <span className="text-sm text-text-primary flex-1">
+            Analysis completed
+          </span>
+          <span className="text-xs text-text-muted flex items-center gap-1">
+            Expand <ChevronDown className="w-3.5 h-3.5" strokeWidth={2} />
+          </span>
+        </button>
+      ) : (
+        // ── Full or truncated body ──────────────────────────────────────
+        <div
+          className={[
+            "card px-5 py-4 overflow-hidden",
+            active ? "agent-glow" : "",
+          ].join(" ")}
+        >
+          <div
+            ref={bodyRef}
+            className={[
+              "transition-[max-height] duration-200",
+              showTruncated
+                ? "max-h-[16rem] overflow-hidden relative"
+                : "",
+            ].join(" ")}
+            style={
+              showTruncated
+                ? {
+                    // Soft gradient fade so the truncation is visually clear
+                    // without a hard cut across a line of text.
+                    WebkitMaskImage:
+                      "linear-gradient(to bottom, black 78%, transparent)",
+                    maskImage:
+                      "linear-gradient(to bottom, black 78%, transparent)",
+                  }
+                : undefined
+            }
+          >
+            <article className="md">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {body || (active ? "…" : "")}
+              </ReactMarkdown>
+            </article>
+          </div>
+
+          {/* Trailing control row: Show more (while streaming) / Collapse
+              (once streaming has finished). */}
+          {showTruncated && overflowing && (
+            <div className="mt-3 pt-3 border-t border-border-subtle flex justify-center">
+              <button
+                type="button"
+                onClick={() => setManuallyExpanded(true)}
+                className="text-xs text-text-secondary hover:text-text-primary transition flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-bg-subtle"
+                aria-label="Show full agent output"
+              >
+                Show more <ChevronDown className="w-3.5 h-3.5" strokeWidth={2} />
+              </button>
+            </div>
+          )}
+          {showFull && !active && (
+            <div className="mt-3 pt-3 border-t border-border-subtle flex justify-center">
+              <button
+                type="button"
+                onClick={() => setManuallyExpanded(false)}
+                className="text-xs text-text-secondary hover:text-text-primary transition flex items-center gap-1.5 px-3 py-1 rounded-full hover:bg-bg-subtle"
+                aria-label="Collapse agent output"
+              >
+                Collapse <ChevronUp className="w-3.5 h-3.5" strokeWidth={2} />
+              </button>
+            </div>
+          )}
+        </div>
+      )}
     </section>
   );
 }

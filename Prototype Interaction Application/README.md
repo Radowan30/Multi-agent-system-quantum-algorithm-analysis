@@ -6,7 +6,10 @@ the thesis *"LLM Based AI Agents for Improving Quantum Algorithm Simulation"*.
 You drop a Grover-algorithm QASM circuit into the upload zone, and the
 interface streams back the live per-agent reasoning of the three specialised
 agents (Oracle Extractor → Marked-State Identifier → Probability Distribution),
-finishing with the final probability distribution.
+finishing with the final probability distribution. Long agent outputs are
+truncated during streaming behind a **Show more** button and collapsed to a
+one-line "Analysis completed" summary once finished, and the whole session
+can be exported as a professionally formatted PDF report with one click.
 
 Everything in this folder runs **locally on your own computer**. Nothing is
 sent off-machine; the model, the proxy, and the UI all communicate over
@@ -152,14 +155,28 @@ Open that URL in your browser.
   click to browse). The file contents are sent to the proxy, which runs
   Agent 1 → Agent 2 → Agent 3 sequentially and streams the combined per-agent
   reasoning back as one OpenAI-style chat completion.
-- **No typing required.** The interface is upload-driven — the proxy only
+- **No typing required.** The interface is upload-driven; the proxy only
   accepts Grover circuits in OpenQASM 3.0 anyway.
-- **Stop response** — there is a button in the dropzone area while a response
-  is streaming; click it to cancel the in-flight request mid-stream.
-- **Settings panel** (gear icon in the header) — override the proxy base URL
+- **Progressive show / collapse of each agent's output.** While an agent is
+  streaming, only the first few lines of its output are shown alongside a
+  **Show more** button so the page never grows into a long scroll. Once the
+  agent has finished, its section collapses to a single "Analysis completed"
+  strip with an **Expand** button; click **Expand** to see the full trace
+  and **Collapse** to fold it back. If you expanded an agent mid-stream, it
+  stays open after streaming ends, with a **Collapse** button ready.
+- **Download a session report as PDF.** The file-download icon in the header
+  becomes active as soon as at least one circuit has been analysed. Clicking
+  it opens an in-page preview of a professionally formatted PDF report that
+  includes, for every uploaded circuit in the current session, the filename,
+  the number of qubits, the number of marked states (and the state strings
+  themselves), and the raw output of each of the three agents in its per-
+  agent colour. The preview and the downloaded file are byte-identical.
+- **Stop response.** A stop button appears in the dropzone area while a
+  response is streaming; click it to cancel the in-flight request mid-stream.
+- **Settings panel** (gear icon in the header). Override the proxy base URL
   and the advertised model name if you started the proxy on non-default
   ports.
-- **Theme toggle** (sun / moon icon in the header) — switch between light and
+- **Theme toggle** (sun / moon icon in the header). Switch between light and
   dark themes; the choice is remembered across page loads.
 
 ## 6. Optional — build the UI for production
