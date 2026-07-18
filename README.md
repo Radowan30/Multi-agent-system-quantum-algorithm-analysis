@@ -10,7 +10,7 @@ This work builds on the **GroverGPT+** research:
 > M. Chen, *et al.*, "Symbolic analysis of Grover search algorithm via
 > Chain-of-Thought reasoning and quantum-native tokenization,"
 > *npj Quantum Information*, vol. 12, no. 1, art. 48, 2026.
-> Original code + dataset: <https://github.com/JimXiong16/GroverGPT-2>
+> Original code + dataset: <[https://github.com/mchen644/GroverGPT-plus](https://github.com/mchen644/GroverGPT-plus)>
 
 ## Repository contents
 
