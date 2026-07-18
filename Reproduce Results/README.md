@@ -41,7 +41,7 @@ This work builds directly upon the **GroverGPT+** research. The original source
 code and the QASM training dataset are released by the original authors at:
 
 > **GroverGPT+ official GitHub repository:**
-> [https://github.com/JimXiong16/GroverGPT-2](https://github.com/JimXiong16/GroverGPT-2)
+> [https://github.com/mchen644/GroverGPT-plus](https://github.com/mchen644/GroverGPT-plus)
 
 We thank the authors for releasing both their code and their dataset openly.
 
@@ -122,8 +122,8 @@ pip install -r <path to>/envs/venv-inference_requirements.txt
 deactivate
 ```
 
-> **Note:** Some packages (e.g. `vllm`, `bitsandbytes`) are large and may take
-> 10–20 minutes each to install. Keep network access available throughout.
+> **Note:** Some packages (e.g. `vllm`, `bitsandbytes`) are large.
+> Keep network access available throughout the install.
 
 Verify each venv:
 
@@ -167,10 +167,10 @@ Download it from their official repository:
 
 > **Dataset source:**
 > [https://github.com/JimXiong16/GroverGPT-2](https://github.com/JimXiong16/GroverGPT-2)
-> (look inside the `data` folder for `data_MMS.rar` and the prepared JSON files
-> `Grover_FullCircuit_2_7_MMS.json` and `Grover_Oracle_2_10_MMS.json`)
+> (follow their instructions to download the data_MMS.rar file, extract it and use the dataset_generate_MMS.py script
+> to generate the dataset JSON files)
 
-After downloading, place the two JSON dataset files into your LLaMA-Factory
+Then place the two JSON dataset files into your LLaMA-Factory
 `data/` folder:
 
 ```bash
@@ -179,7 +179,7 @@ cp Grover_Oracle_2_10_MMS.json      $WORK/LLaMA-Factory/data/
 ```
 
 You will also need the raw `data_MMS` folder of QASM circuits for the
-evaluation step. Unrar `data_MMS.rar` into a known location, e.g.
+evaluation step. Put the extracted content of the data_MMS.rar file into a known location, e.g.
 `$WORK/data_MMS/`.
 
 ---
@@ -427,7 +427,7 @@ $WORK/venv-train/bin/llamafactory-cli train  $WORK/<repo>/Phase\ 4/train_LLaMA-3
 $WORK/venv-train/bin/llamafactory-cli export $WORK/<repo>/Phase\ 4/merge_LLaMA-3.1-8B.yaml
 ```
 
-Each training run takes roughly 6–8 hours on the RTX PRO 6000.
+Each training run takes roughly 5–8 hours on the RTX PRO 6000.
 
 ### 10.3 Evaluate the Phase 4 multi-agent system end-to-end
 
@@ -497,7 +497,7 @@ This work is built on top of the **GroverGPT+** research:
 > Chain-of-Thought reasoning and quantum-native tokenization," *npj Quantum
 > Information*, vol. 12, no. 1, art. 48, 2026.
 >
-> Source code and dataset: <https://github.com/JimXiong16/GroverGPT-2>
+> Source code and dataset: <https://github.com/mchen644/GroverGPT-plus>
 
 We also acknowledge the open-source LLaMA-Factory, vLLM, LangChain, Qiskit,
 and PyTorch projects, without which this work would not have been possible.
