@@ -166,7 +166,7 @@ The training dataset is the **same one released by the GroverGPT+ authors**.
 Download it from their official repository:
 
 > **Dataset source:**
-> [https://github.com/JimXiong16/GroverGPT-2](https://github.com/JimXiong16/GroverGPT-2)
+> [https://github.com/mchen644/GroverGPT-plus](https://github.com/mchen644/GroverGPT-plus)
 > (follow their instructions to download the data_MMS.rar file, extract it and use the dataset_generate_MMS.py script
 > to generate the dataset JSON files)
 
