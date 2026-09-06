@@ -1,7 +1,7 @@
 # Prototype Interaction Application
 
 A self-contained chat-style interface for the Phase 4 multi-agent system from
-the thesis *"LLM Based AI Agents for Improving Quantum Algorithm Simulation"*.
+the thesis *"LLM Based Multi-Agent System for Improving Quantum Algorithm Symbolic Analysis"*.
 
 You drop a Grover-algorithm QASM circuit into the upload zone, and the
 interface streams back the live per-agent reasoning of the three specialised

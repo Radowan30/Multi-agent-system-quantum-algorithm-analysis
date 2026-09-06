@@ -1,8 +1,9 @@
 # Our Results
 
 This folder contains the full set of result figures and underlying numerical
-data files for the four research phases of the thesis *"LLM Based AI Agents
-for Improving Quantum Algorithm Simulation"*. Every figure here is one that is
+data files for the four research phases of the thesis *"LLM Based Multi-Agent
+System for Improving Quantum Algorithm Symbolic Analysis"*. Every figure here
+is one that is
 referenced and discussed in the thesis (Figure 9 – Figure 48), and every
 result JSON is the raw output of the evaluation that produced the corresponding
 figures.

@@ -1,4 +1,4 @@
-# LLM Based AI Agents for Improving Quantum Algorithm Simulation
+# LLM Based Multi-Agent System for Improving Quantum Algorithm Symbolic Analysis
 
 Companion repository for the Final Year Project thesis of the same name. It
 contains the full set of result artifacts, the code and configuration needed
@@ -10,7 +10,7 @@ This work builds on the **GroverGPT+** research:
 > M. Chen, *et al.*, "Symbolic analysis of Grover search algorithm via
 > Chain-of-Thought reasoning and quantum-native tokenization,"
 > *npj Quantum Information*, vol. 12, no. 1, art. 48, 2026.
-> Original code + dataset: <[https://github.com/mchen644/GroverGPT-plus](https://github.com/mchen644/GroverGPT-plus)>
+> Original code + dataset: <https://github.com/JimXiong16/GroverGPT-2>
 
 ## Repository contents
 
