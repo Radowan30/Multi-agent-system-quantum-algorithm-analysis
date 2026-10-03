@@ -23,10 +23,10 @@ Phase-agnostic: works for any phase, model, mode, or n range — auto-detects al
 of them from the input files.
 
 Usage:
-  python evaluation/oracle_extraction_accuracy.py \\
-      --outputs_jsonl evaluation/phase-1/results_alpha16_cl4000/outputs_full_2_9_paper.jsonl \\
-      --manifest evaluation/circuit_manifests/circuits_full_2_9_paper.json \\
-      --results_dir evaluation/phase-1/results_alpha16_cl4000
+  python oracle_extraction_accuracy.py \\
+      --outputs_jsonl $WORK/results/phase-1/outputs_full_2_9_paper.jsonl \\
+      --manifest $WORK/eval_circuits/manifests/circuits_full_2_9_paper.json \\
+      --results_dir $WORK/results/phase-1
 """
 
 import argparse
@@ -38,8 +38,7 @@ from collections import defaultdict
 from typing import Dict, List, Optional
 
 _EVAL_DIR    = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_DIR = os.path.dirname(_EVAL_DIR)
-sys.path.insert(0, os.path.join(_PROJECT_DIR, "GroverGPT-plus"))
+sys.path.insert(0, _EVAL_DIR)   # dataset_generate_MMS.py (GroverGPT+ generator) sits here
 
 from dataset_generate_MMS import extract_oracle_structure  # noqa: E402
 

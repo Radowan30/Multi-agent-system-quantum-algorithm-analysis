@@ -38,5 +38,13 @@
       "response": "output",
       "system": "instruction"
     }
+  },
+  "Grover_Monolithic_2_7_MMS": {
+    "file_name": "Grover_Monolithic_2_7_MMS.json",
+    "columns": {
+      "prompt": "input",
+      "response": "output",
+      "system": "instruction"
+    }
   }
 }

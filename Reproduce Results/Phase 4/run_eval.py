@@ -66,16 +66,15 @@ from typing import Dict, List
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 
-# Project-level imports for the existing metric implementations
+# Shared metric implementations (Reproduce Results/evaluation_pipeline)
 _PROJECT_DIR = _HERE.parent
-sys.path.insert(0, str(_PROJECT_DIR / "evaluation"))
-sys.path.insert(0, str(_PROJECT_DIR / "GroverGPT-plus"))
+sys.path.insert(0, str(_PROJECT_DIR / "evaluation_pipeline"))
 
 # Phase 3 dir appended (NOT prepended) so shared infrastructure modules
 # (chain, cot_logger, parsers, orchestrator_vanilla, orchestrator_langchain,
 # vllm_server) are importable, while Phase 4's local `prompts.py` still wins
 # for the orchestrator's `from prompts import ...` (because _HERE is ahead).
-sys.path.append(str(_PROJECT_DIR / "Multi Agent System Phase 3"))
+sys.path.append(str(_PROJECT_DIR / "Phase 3"))
 
 from metrics import (  # noqa: E402
     grover_ground_truth,

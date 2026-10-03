@@ -1,0 +1,19 @@
+# ==============================================================================
+# Phase 4 ablation — merge the monolithic LoRA adapter (Gradient 262k base).
+# Same settings as "Phase 4/merge_Llama-3-8B-Instruct-262k.yaml";
+# only the adapter and export paths differ.
+# ==============================================================================
+
+### model
+model_name_or_path: ../models/Llama-3-8B-Instruct-262k-quantum   # prepared by tokenizer/prepare_quantum_model.py
+adapter_name_or_path: ../saves/Llama-3-8B-Instruct-262k/lora/Phase4_monolithic_alpha32
+template: llama3
+finetuning_type: lora
+trust_remote_code: true
+resize_vocab: true
+
+### export
+export_dir: ../saves/Llama-3-8B-Instruct-262k/merged/Phase4_monolithic_alpha32
+export_size: 5
+export_device: cpu
+export_legacy_format: false

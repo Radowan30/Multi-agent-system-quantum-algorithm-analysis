@@ -6,15 +6,15 @@
 # which the vLLM evaluation pipeline then loads.
 #
 # Run AFTER training finishes:
-#   cd LLaMA-Factory && llamafactory-cli export ../merge_grovergpt_plus_alpha32.yaml
+#   cd $WORK/LLaMA-Factory && llamafactory-cli export "<repo>/Reproduce Results/Phase 1/merge.yaml"
 #
 # Every key below was verified to be a valid LLaMA-Factory argument
 # (ModelArguments / DataArguments / FinetuningArguments).
 # ==============================================================================
 
 ### model
-model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Meta-Llama-3-8B-Instruct
-adapter_name_or_path: /home/quantum-user/radowan/final_year_project/saves/Meta-Llama-3-8B-Instruct/lora/GroverGPT+_alpha32
+model_name_or_path: ../models/Meta-Llama-3-8B-Instruct-quantum   # prepared by tokenizer/prepare_quantum_model.py
+adapter_name_or_path: ../saves/Meta-Llama-3-8B-Instruct/lora/GroverGPT+_alpha32
 template: llama3
 finetuning_type: lora
 trust_remote_code: true
@@ -23,7 +23,7 @@ resize_vocab: true            # resize base embeddings (128256) to the extended 
                               # embed_tokens/lm_head (modules_to_save) load without a size mismatch.
 
 ### export
-export_dir: /home/quantum-user/radowan/final_year_project/saves/Meta-Llama-3-8B-Instruct/merged/GroverGPT+_alpha32
+export_dir: ../saves/Meta-Llama-3-8B-Instruct/merged/GroverGPT+_alpha32
 export_size: 5                # shard size in GB (output may be sharded — the eval handles that fine)
 export_device: cpu            # merge on CPU — pure weight arithmetic, avoids GPU memory pressure
 export_legacy_format: false   # save as safetensors (required by the vLLM eval)

@@ -10,16 +10,18 @@ Per-cell counts (paper-target, set by `circuit_utils.target_circuit_count`):
   n=2: 4   n=3: 36   n=4..6: 100   n=7: 128   n=8: 256   n=9..19: 300 each
 (no degenerate Grover cells: n=2 k=2/k=3, n=3 k=3 — see project_data_mms_holes)
 
-Source : evaluation/circuit_manifests/circuits_full_2_19_paper.json
+Source : $WORK/eval_circuits/manifests/circuits_full_2_19_paper.json
+         (made by evaluation_pipeline/generate_eval_circuits.py)
 Output : <out_dir>/circuits.jsonl   (+ <out_dir>/qasm/*.qasm)
 """
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-PROJECT = Path(__file__).resolve().parent.parent
-MANIFEST = PROJECT / "evaluation" / "circuit_manifests" / "circuits_full_2_19_paper.json"
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "evaluation_pipeline"))
+from workdir import manifests_dir  # noqa: E402
 
 N_MIN, N_MAX = 2, 19
 
@@ -33,7 +35,11 @@ def main():
     qasm_dir = out_dir / "qasm"
     qasm_dir.mkdir(parents=True, exist_ok=True)
 
-    manifest = json.loads(MANIFEST.read_text())
+    manifest_path = Path(manifests_dir()) / "circuits_full_2_19_paper.json"
+    if not manifest_path.exists():
+        sys.exit(f"Manifest not found: {manifest_path}\nRun evaluation_pipeline/generate_eval_circuits.py "
+                 "--mode full --n_min 2 --n_max 19 --circuit_source paper first.")
+    manifest = json.loads(manifest_path.read_text())
     total = 0
     per_n = {}
 

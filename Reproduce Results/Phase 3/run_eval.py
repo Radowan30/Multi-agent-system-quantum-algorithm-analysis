@@ -55,10 +55,9 @@ from typing import Dict, List
 _HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(_HERE))
 
-# Project-level imports for the existing metric implementations
+# Shared metric implementations (Reproduce Results/evaluation_pipeline)
 _PROJECT_DIR = _HERE.parent
-sys.path.insert(0, str(_PROJECT_DIR / "evaluation"))
-sys.path.insert(0, str(_PROJECT_DIR / "GroverGPT-plus"))
+sys.path.insert(0, str(_PROJECT_DIR / "evaluation_pipeline"))
 
 from metrics import (  # noqa: E402
     grover_ground_truth,

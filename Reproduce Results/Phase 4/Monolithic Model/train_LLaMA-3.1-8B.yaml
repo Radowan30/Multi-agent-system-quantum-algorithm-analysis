@@ -1,0 +1,72 @@
+# ==============================================================================
+# Phase 4 ablation — monolithic model on equivalent data (LLaMA 3.1 8B base).
+#
+# Identical to "Phase 4/train_LLaMA-3.1-8B.yaml"
+# except for the dataset (monolithic concatenation of the three agent targets),
+# cutoff_len 4000 -> 5000 (so no n = 7 target is truncated; see the Gradient
+# variant's header for the numbers) and the output directory.
+#
+# Base model: LLaMA 3.1 8B Instruct with the extended quantum-native tokenizer,
+# the simple llama3 chat template and eos_token_id = [128001, 128009]
+# (the same -quantum directory as Phase 2 and Phase 4).
+# ==============================================================================
+
+### model
+model_name_or_path: ../models/Llama-3.1-8B-Instruct-quantum   # prepared by tokenizer/prepare_quantum_model.py
+trust_remote_code: true
+resize_vocab: true
+
+### method
+stage: sft
+do_train: true
+finetuning_type: lora
+lora_rank: 8
+lora_alpha: 32
+lora_dropout: 0.0
+lora_target: q_proj,v_proj
+additional_target: embed_tokens,lm_head
+disable_shuffling: true
+
+### dataset
+dataset: Grover_Monolithic_2_7_MMS
+dataset_dir: data
+template: llama3
+cutoff_len: 5000
+overwrite_cache: true
+preprocessing_num_workers: 16
+
+### output
+output_dir: ../saves/Llama-3.1-8B-Instruct/lora/Phase4_monolithic_alpha32
+logging_steps: 10
+save_steps: 50
+save_total_limit: 2
+plot_loss: true
+overwrite_output_dir: true
+report_to: none
+
+### train
+per_device_train_batch_size: 1
+gradient_accumulation_steps: 8
+learning_rate: 2.0e-5
+num_train_epochs: 10.0
+lr_scheduler_type: cosine
+warmup_steps: 20
+weight_decay: 0.0
+max_grad_norm: 1.0
+optim: adamw_torch_fused
+adam_beta1: 0.9
+adam_beta2: 0.999
+adam_epsilon: 1.0e-8
+fp16: true
+seed: 42
+dataloader_num_workers: 4
+ddp_timeout: 180000000
+
+### eval
+val_size: 0.1
+per_device_eval_batch_size: 1
+eval_strategy: steps
+eval_steps: 50
+load_best_model_at_end: true
+metric_for_best_model: loss
+greater_is_better: false

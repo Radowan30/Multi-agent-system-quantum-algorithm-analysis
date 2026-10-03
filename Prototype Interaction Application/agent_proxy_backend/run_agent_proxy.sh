@@ -11,21 +11,26 @@
 # Both processes are killed on script exit (SIGINT/SIGTERM/normal).
 #
 # Run:
-#   bash "Multi Agent System Phase 4/run_agent_proxy.sh"
+#   bash "Prototype Interaction Application/agent_proxy_backend/run_agent_proxy.sh"
 #
-# Optional environment overrides:
-#   MERGED_MODEL  — path to a merged model dir (default: Phase 4 Gradient)
+# Environment variables (set WORK to use the defaults from Reproduce Results):
+#   MERGED_MODEL  — merged Phase 4 model dir
+#                   (default: $WORK/saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32)
+#   PYTHON        — Python with vLLM, FastAPI and openai installed
+#                   (default: $WORK/venv-inference/bin/python)
 #   VLLM_PORT     — vLLM port (default 8000)
 #   PROXY_PORT    — proxy port (default 8080)
 #   MAX_MODEL_LEN — vLLM max context (default 150000)
 
 set -euo pipefail
 
-PROJ=/home/quantum-user/radowan/final_year_project
-PHASE4_DIR="$PROJ/Multi Agent System Phase 4"
-PY_EVAL="$PROJ/venv-eval/bin/python"
-
-MERGED="${MERGED_MODEL:-$PROJ/saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32}"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PYTHON="${PYTHON:-${WORK:+$WORK/venv-inference/bin/python}}"
+MERGED="${MERGED_MODEL:-${WORK:+$WORK/saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32}}"
+if [[ -z "$PYTHON" || -z "$MERGED" ]]; then
+    echo "Set WORK (see Reproduce Results/README.md), or set both PYTHON and MERGED_MODEL." >&2
+    exit 1
+fi
 VLLM_PORT="${VLLM_PORT:-8000}"
 PROXY_PORT="${PROXY_PORT:-8080}"
 MAX_MODEL_LEN="${MAX_MODEL_LEN:-150000}"
@@ -61,7 +66,7 @@ trap cleanup EXIT INT TERM
 
 # ── 1. Start vLLM ─────────────────────────────────────────────────────────────
 echo "[run_agent_proxy] Starting vLLM on port $VLLM_PORT with $MERGED"
-"$PY_EVAL" -m vllm.entrypoints.openai.api_server \
+"$PYTHON" -m vllm.entrypoints.openai.api_server \
     --model "$MERGED" \
     --served-model-name "$VLLM_MODEL_NAME" \
     --host 127.0.0.1 --port "$VLLM_PORT" \
@@ -95,7 +100,7 @@ fi
 
 # ── 2. Start agent proxy ──────────────────────────────────────────────────────
 echo "[run_agent_proxy] Starting agent proxy on port $PROXY_PORT"
-"$PY_EVAL" "$PHASE4_DIR/agent_proxy.py" \
+"$PYTHON" "$HERE/agent_proxy.py" \
     --vllm_url "http://127.0.0.1:$VLLM_PORT/v1" \
     --vllm_model "$VLLM_MODEL_NAME" \
     --proxy_model "$PROXY_MODEL_NAME" \

@@ -9,7 +9,7 @@ mixed-k (drawn from the natural data_MMS k distribution, no per-k stratification
 The resulting JSONL is consumed by `run_eval.py` with `--max_concurrency 1`
 so each chain is timed in isolation, free of continuous-batching interference.
 
-Source : GroverGPT-plus/data_MMS/grover_n{n}/*.qasm
+Source : $WORK/data_MMS/grover_n{n}/*.qasm
 Output : <out_dir>/circuits.jsonl   (+ <out_dir>/qasm/*.qasm)
 """
 
@@ -17,10 +17,11 @@ import argparse
 import json
 import random
 import re
+import sys
 from pathlib import Path
 
-PROJECT = Path(__file__).resolve().parent.parent
-DATA_MMS = PROJECT / "GroverGPT-plus" / "data_MMS"
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "evaluation_pipeline"))
+from workdir import data_mms_dir  # noqa: E402
 
 N_MIN, N_MAX = 2, 19
 N_CIRCUITS_PER_N = 3
@@ -61,7 +62,7 @@ def main():
 
     with open(out_dir / "circuits.jsonl", "w") as f:
         for n in range(N_MIN, N_MAX + 1):
-            pool = sorted((DATA_MMS / f"grover_n{n}").glob("*.qasm"))
+            pool = sorted((Path(data_mms_dir()) / f"grover_n{n}").glob("*.qasm"))
             if not pool:
                 print(f"  n={n}: NO POOL — skipping (data_MMS/grover_n{n}/ missing)")
                 per_n[n] = 0

@@ -12,16 +12,16 @@ Output: <results_dir>/cot_traces.md — model output (left) vs ground truth CoT
 (right), with SA, CF, and per-circuit single-instance timing.
 
 Usage:
-  venv-eval/bin/python evaluation/inspect_cot_traces.py \\
-      --model_path saves/.../merged/GroverGPT+_alpha16_cl4000 \\
-      --results_dir evaluation/phase-1/results_alpha16_cl4000
+  $WORK/venv-eval/bin/python inspect_cot_traces.py \\
+      --model_path $WORK/saves/Meta-Llama-3-8B-Instruct/merged/GroverGPT+_alpha32 \\
+      --results_dir $WORK/results/phase-1
 
   # Custom n-range (e.g. for a Phase 2 model trained on full circuits up to n=19):
-  venv-eval/bin/python evaluation/inspect_cot_traces.py \\
+  $WORK/venv-eval/bin/python inspect_cot_traces.py \\
       --model_path ... --results_dir ... --full_n_range 2-19
 
   # Include all circuits (not just one per (n,t) cell) at multiple small n:
-  venv-eval/bin/python evaluation/inspect_cot_traces.py \\
+  $WORK/venv-eval/bin/python inspect_cot_traces.py \\
       --model_path ... --results_dir ... --include_all_at_n 2,3
 """
 
@@ -38,9 +38,7 @@ from transformers import AutoTokenizer
 from vllm import LLM, SamplingParams
 
 _EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
-_PROJECT_DIR = os.path.dirname(_EVAL_DIR)
 sys.path.insert(0, _EVAL_DIR)
-sys.path.insert(0, os.path.join(_PROJECT_DIR, "GroverGPT-plus"))
 
 from metrics import classical_fidelity, grover_ground_truth, search_accuracy  # noqa: E402
 from parse_output import parse_model_output                                     # noqa: E402
@@ -49,7 +47,6 @@ from dataset_generate_MMS import (                                              
     generate_reasoning,
 )
 
-DEFAULT_DATA_DIR = os.path.join(_PROJECT_DIR, "GroverGPT-plus", "data_MMS")
 
 
 # ---------------------------------------------------------------------------
@@ -239,8 +236,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model_path", required=True, help="Merged GroverGPT+ model directory")
     ap.add_argument("--results_dir", required=True, help="Where to write cot_traces.md")
-    ap.add_argument("--data_dir", default=DEFAULT_DATA_DIR,
-                    help=f"data_MMS directory (default: {DEFAULT_DATA_DIR})")
+    ap.add_argument("--data_dir", default=None,
+                    help="data_MMS directory (default: $WORK/data_MMS)")
     ap.add_argument("--full_n_range", default="2-9",
                     help="n range for the full-circuit section (default: 2-9, matches Phase 1)")
     ap.add_argument("--oracle_n_range", default="2-20",
@@ -254,6 +251,9 @@ def main():
     ap.add_argument("--max_model_len", type=int, default=8192)
     ap.add_argument("--gpu_memory_utilization", type=float, default=0.85)
     args = ap.parse_args()
+    if args.data_dir is None:
+        from workdir import data_mms_dir
+        args.data_dir = data_mms_dir()
 
     os.makedirs(args.results_dir, exist_ok=True)
     full_n        = _parse_n_range(args.full_n_range)

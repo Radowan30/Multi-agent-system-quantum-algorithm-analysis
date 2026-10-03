@@ -9,8 +9,8 @@ prompt scaffolding is needed at inference. The task definition, output
 format, reasoning structure and stopping behavior are all carried by the
 trained weights.
 
-This module shadows Phase 3's `prompts.py` when `Multi Agent System Phase
-4/run_eval.py` puts its own directory ahead of Phase 3's on sys.path. The
+This module shadows Phase 3's `prompts.py` when `Phase 4/run_eval.py`
+puts its own directory ahead of Phase 3's on sys.path. The
 shared orchestrator code in Phase 3 then imports these minimal builders
 instead of the prompt-template-loading ones.
 

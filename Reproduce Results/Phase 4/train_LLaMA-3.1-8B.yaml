@@ -6,22 +6,21 @@
 # variant) — only the base model differs. This is the second base-model
 # datapoint for the Phase 4 robustness comparison.
 #
-# Base model: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
-#   - Reused from Phase 2 — already has the patches applied:
+# Base model: ../models/Llama-3.1-8B-Instruct-quantum (the same directory as
+# Phase 2, made by tokenizer/prepare_quantum_model.py), which has:
 #       * extended quantum-native tokenizer (128395 vocab = 128256 + 139)
-#       * simple llama3 chat template (Phase 1's template; original Meta
-#         template kept as chat_template_llama31_default_backup.jinja)
+#       * simple llama3 chat template (the LLaMA 3 template)
 #       * generation_config.json eos_token_id = [128001, 128009]
 #         (128008 / <|eom_id|> removed — Phase 2 confirmed this prevents
 #         training-label masking weirdness with LLaMA-Factory's llama3 template)
 #
 # Run:
-#   cd LLaMA-Factory && \
-#     llamafactory-cli train "../Multi Agent System Phase 4/train_phase4_llama31_alpha32.yaml"
+#   cd $WORK/LLaMA-Factory && \
+#     llamafactory-cli train "<repo>/Reproduce Results/Phase 4/train_LLaMA-3.1-8B.yaml"
 # ==============================================================================
 
 ### model
-model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
+model_name_or_path: ../models/Llama-3.1-8B-Instruct-quantum   # prepared by tokenizer/prepare_quantum_model.py
 trust_remote_code: true
 resize_vocab: true                        # 128256 → 128395 (extended quantum-native tokenizer)
 
@@ -38,14 +37,14 @@ disable_shuffling: true                   # preserve curriculum order
 
 ### dataset
 dataset: Grover_Agent1_2_7_MMS,Grover_Agent2_2_7_MMS,Grover_Agent3_2_7_MMS
-dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+dataset_dir: data
 template: llama3
 cutoff_len: 4000
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/lora/Phase4_alpha32
+output_dir: ../saves/Llama-3.1-8B-Instruct/lora/Phase4_alpha32
 logging_steps: 10
 save_steps: 50
 save_total_limit: 2

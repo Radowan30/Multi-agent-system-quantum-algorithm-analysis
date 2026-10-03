@@ -20,13 +20,13 @@ Two layouts:
 Typical uses:
 
   # Single, cross-model, one mode
-  python evaluation/plot_oracle_accuracy.py \\
+  python plot_oracle_accuracy.py \\
       --input results_alpha16/oracle_extraction_full_2_9_paper.json "alpha16" \\
       --input results_alpha32/oracle_extraction_full_2_9_paper.json "alpha32" \\
       --output comparison_full.png
 
   # Dual, single model, both modes — for the OOD-comparison narrative
-  python evaluation/plot_oracle_accuracy.py --dual \\
+  python plot_oracle_accuracy.py --dual \\
       --full   results_alpha16/oracle_extraction_full_2_9_paper.json    "alpha16" \\
       --oracle results_alpha16/oracle_extraction_oracle_2_20_paper.json "alpha16" \\
       --train_full_range  2,7   \\
@@ -34,7 +34,7 @@ Typical uses:
       --output dual_alpha16.png
 
   # Dual, both models on both axes
-  python evaluation/plot_oracle_accuracy.py --dual \\
+  python plot_oracle_accuracy.py --dual \\
       --full   results_alpha16/oracle_extraction_full_2_9_paper.json    "alpha16" \\
       --full   results_alpha32/oracle_extraction_full_2_9_paper.json    "alpha32" \\
       --oracle results_alpha16/oracle_extraction_oracle_2_20_paper.json "alpha16" \\

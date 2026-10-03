@@ -92,26 +92,23 @@ Verify it works:
 
 ## 2. Configure the backend launcher
 
-Open `agent_proxy_backend/run_agent_proxy.sh` and adjust the three environment
-variables at the top to match your local paths:
+`agent_proxy_backend/run_agent_proxy.sh` needs no editing. If you followed
+`Reproduce Results/README.md`, set `WORK` to the same working directory and
+the script finds both the merged Phase 4 model and the `venv-inference`
+Python:
 
 ```bash
-PROJ=<path to the folder containing this repo>          # parent dir
-PHASE4_DIR=<absolute path to agent_proxy_backend>       # this folder
-PY_EVAL=<absolute path to your venv-inference/bin/python>
+export WORK=$HOME/grover-multiagent-reproduction
 ```
 
-You can also override these from the command line:
+Otherwise, point it at your model and Python explicitly (ports are optional):
 
 ```bash
 MERGED_MODEL=/abs/path/to/your/Phase4_alpha32 \
+PYTHON=/abs/path/to/venv-inference/bin/python \
 PROXY_PORT=8080 VLLM_PORT=8000 \
 bash agent_proxy_backend/run_agent_proxy.sh
 ```
-
-The script defaults assume `MERGED_MODEL` points at a Phase 4 merged
-checkpoint produced by `Reproduce Results/Phase 4`; override it if yours
-lives elsewhere.
 
 ## 3. Start the backend
 
@@ -194,8 +191,11 @@ will Just Work.
 
 ## Troubleshooting
 
-- **vLLM does not start (CUDA OOM).** Lower `--gpu-memory-utilization` in
-  `run_agent_proxy.sh` (e.g. from 0.90 → 0.80), or reduce `MAX_MODEL_LEN`.
+- **vLLM does not start (out of memory, or not enough KV-cache memory for
+  `MAX_MODEL_LEN`).** The launcher reserves 39% of GPU memory
+  (`--gpu-memory-utilization 0.39`), which suits a 96 GB card. On a smaller
+  GPU, raise that value in `run_agent_proxy.sh` (e.g. to 0.60), or reduce
+  `MAX_MODEL_LEN`. If another process is using the GPU, stop it first.
 - **`npm install` fails on a non-Linux host.** Make sure you are using Node 22
   and a clean working tree. Delete `node_modules` and `package-lock.json` and
   retry if needed.

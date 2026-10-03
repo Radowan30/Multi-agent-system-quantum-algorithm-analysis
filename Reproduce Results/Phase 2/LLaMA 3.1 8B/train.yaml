@@ -5,12 +5,12 @@
 #   - model_name_or_path: LLaMA 3.1 8B (128K context) instead of LLaMA 3 8B
 #   - output_dir under saves/Llama-3.1-8B-Instruct/
 #
-# Run: cd LLaMA-Factory && \
-#   llamafactory-cli train "../Fine-tuned Llama 3.1 8B/train_llama31_alpha32.yaml"
+# Run: cd $WORK/LLaMA-Factory && \
+#   llamafactory-cli train "<repo>/Reproduce Results/Phase 2/LLaMA 3.1 8B/train.yaml"
 # ==============================================================================
 
 ### model
-model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Llama-3.1-8B-Instruct
+model_name_or_path: ../models/Llama-3.1-8B-Instruct-quantum   # prepared by tokenizer/prepare_quantum_model.py
 trust_remote_code: true
 resize_vocab: true
 
@@ -27,14 +27,14 @@ disable_shuffling: true
 
 ### dataset
 dataset: Grover_FullCircuit_2_7_MMS,Grover_Oracle_2_10_MMS
-dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+dataset_dir: data
 template: llama3
 cutoff_len: 4000
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3.1-8B-Instruct/lora/Llama31_alpha32
+output_dir: ../saves/Llama-3.1-8B-Instruct/lora/Llama31_alpha32
 logging_steps: 10
 save_steps: 50
 save_total_limit: 2

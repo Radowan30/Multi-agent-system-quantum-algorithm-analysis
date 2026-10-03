@@ -14,8 +14,8 @@ starts at the reference n. RET uncertainty is propagated through the
 division.
 
 Usage:
-    python evaluation/phase-2/plot_ret_normalized.py \
-        --results_dir evaluation/phase-2/results_llama31_alpha32 \
+    python plot_ret_normalized.py \
+        --results_dir $WORK/results/phase-2/LLaMA-3.1-8B \
         --circuit_source paper \
         --normalize_n 3 \
         --label "LLaMA 3.1 8B (Phase 2, normalized to n=3)"

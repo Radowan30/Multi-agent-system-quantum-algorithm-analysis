@@ -8,6 +8,10 @@ referenced and discussed in the thesis (Figure 9 – Figure 48), and every
 result JSON is the raw output of the evaluation that produced the corresponding
 figures.
 
+The Phase 4 monolithic ablation (a single model trained on the same data as the
+multi-agent system) was added after the thesis, for the conference version of
+this work. Its figures are named without thesis figure numbers.
+
 ## Folder layout
 
 ```
@@ -21,9 +25,11 @@ Our Results/
 │   ├── Untrained LLaMA 3.1 8B/
 │   ├── Phase 2 Fine-Tuned Llama-3-8B-Instruct-262k/
 │   └── Phase 2 Fine-Tuned LLaMA 3.1 8B/
-└── Phase 4/                                 — Multi-agent system (fine-tuned per agent)
+└── Phase 4/                                 — Multi-agent system (fine-tuned on agent-specific data)
     ├── Llama-3-8B-Instruct-262k/
-    └── LLaMA 3.1 8B/
+    ├── LLaMA 3.1 8B/
+    ├── Monolithic Llama-3-8B-Instruct-262k/ — Ablation: one model trained on the same data
+    └── Monolithic LLaMA 3.1 8B/             — Ablation: one model trained on the same data
 ```
 
 ## File-naming convention
@@ -43,6 +49,7 @@ Our Results/
 | Oracle Extraction Accuracy (OEA) for Agent 1 / monolithic models | `oracle_extraction.json` |
 | Agent 2 Accuracy — marked-state identification | `marked_state_accuracy.json` (Phase 3 / Phase 4 only) |
 | Agent 3 Accuracy — probability distribution | `agent3_accuracy.json` (Phase 3 / Phase 4 only) |
+| Monolithic ablation — the same three scores, computed on the matching section of the single model's output | `oracle_extraction.json`, `marked_state_accuracy.json`, `agent3_accuracy.json` in the `Monolithic …` folders |
 | Relative Execution Time (RET) | `ret` and `ret_std` keys inside `results_full.json` (Phase 1, 2, 4) |
 | Compression Ratio (CR) / Sequence Reduction Ratio (SRR) | `cr` / `srr` keys inside `results_full.json` (Phase 1, 2) |
 

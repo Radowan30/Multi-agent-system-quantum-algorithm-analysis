@@ -4,13 +4,13 @@
 # for vLLM eval.
 #
 # Run AFTER training finishes:
-#   cd LLaMA-Factory && \
-#     llamafactory-cli export "../Multi Agent System Phase 4/merge_phase4_alpha32.yaml"
+#   cd $WORK/LLaMA-Factory && \
+#     llamafactory-cli export "<repo>/Reproduce Results/Phase 4/merge_Llama-3-8B-Instruct-262k.yaml"
 # ==============================================================================
 
 ### model
-model_name_or_path: /home/quantum-user/radowan/models/Llama-3-8B-Instruct-262k
-adapter_name_or_path: /home/quantum-user/radowan/final_year_project/saves/Llama-3-8B-Instruct-262k/lora/Phase4_alpha32
+model_name_or_path: ../models/Llama-3-8B-Instruct-262k-quantum   # prepared by tokenizer/prepare_quantum_model.py
+adapter_name_or_path: ../saves/Llama-3-8B-Instruct-262k/lora/Phase4_alpha32
 template: llama3
 finetuning_type: lora
 trust_remote_code: true
@@ -20,7 +20,7 @@ resize_vocab: true                        # resize base embeddings (128256) to e
                                           # a size mismatch.
 
 ### export
-export_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32
+export_dir: ../saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32
 export_size: 5                # shard size in GB (eval handles sharded output)
 export_device: cpu            # merge on CPU — pure weight arithmetic, avoids GPU pressure
 export_legacy_format: false   # safetensors (required by vLLM)

@@ -15,14 +15,17 @@
 #     Table II says "Disabled". Set to the paper's value (true) here.
 #   - Every other setting already matched the paper and is kept identical.
 #
-# Prerequisite (verified satisfied): models/Meta-Llama-3-8B-Instruct/ holds the
-# 139-token quantum-native tokenizer; `resize_vocab: true` grows the embeddings.
+# Prerequisite: ../models/Meta-Llama-3-8B-Instruct-quantum, made by
+# tokenizer/prepare_quantum_model.py (139-token quantum-native tokenizer);
+# `resize_vocab: true` grows the embeddings.
 #
-# Run:  cd LLaMA-Factory && llamafactory-cli train ../train_grovergpt_plus_alpha32.yaml
+# Run from $WORK/LLaMA-Factory (paths are relative to it), or use the phase's
+# run_*.sh script, which does this for you:
+#   llamafactory-cli train "<repo>/Reproduce Results/Phase 1/train.yaml"
 # ==============================================================================
 
 ### model
-model_name_or_path: /home/quantum-user/radowan/final_year_project/models/Meta-Llama-3-8B-Instruct
+model_name_or_path: ../models/Meta-Llama-3-8B-Instruct-quantum   # prepared by tokenizer/prepare_quantum_model.py
 trust_remote_code: true
 resize_vocab: true                        # extend embeddings to the 139-token vocab
 
@@ -39,14 +42,14 @@ disable_shuffling: true                   # Table II = Disabled| original value 
 
 ### dataset
 dataset: Grover_FullCircuit_2_7_MMS,Grover_Oracle_2_10_MMS
-dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+dataset_dir: data
 template: llama3
 cutoff_len: 4000                          # Table II = 4000    | original: no truncation, confirmed via total_flos (longest example = 3684)
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: /home/quantum-user/radowan/final_year_project/saves/Meta-Llama-3-8B-Instruct/lora/GroverGPT+_alpha32
+output_dir: ../saves/Meta-Llama-3-8B-Instruct/lora/GroverGPT+_alpha32
 logging_steps: 10                         # logging granularity only — no effect on training
 save_steps: 50                            # verified: training_args.bin
 save_total_limit: 2                       # verified: training_args.bin

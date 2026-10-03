@@ -9,7 +9,8 @@
 # names and concatenates them, mirroring Phase 1's joint Grover_FullCircuit +
 # Grover_Oracle training).
 #
-# Base model: /home/quantum-user/radowan/models/Llama-3-8B-Instruct-262k
+# Base model: ../models/Llama-3-8B-Instruct-262k-quantum (made by
+# tokenizer/prepare_quantum_model.py)
 #   - Stock Gradient-262k weights (NOT the Phase 2 LoRA-merged variant).
 #   - Tokenizer at this path is already extended to the 139 quantum-native
 #     tokens (vocab 128395); `resize_vocab: true` grows the model embeddings
@@ -19,12 +20,12 @@
 #     template mismatch bug).
 #
 # Run:
-#   cd LLaMA-Factory && \
-#     llamafactory-cli train "../Multi Agent System Phase 4/train_phase4_alpha32.yaml"
+#   cd $WORK/LLaMA-Factory && \
+#     llamafactory-cli train "<repo>/Reproduce Results/Phase 4/train_Llama-3-8B-Instruct-262k.yaml"
 # ==============================================================================
 
 ### model
-model_name_or_path: /home/quantum-user/radowan/models/Llama-3-8B-Instruct-262k
+model_name_or_path: ../models/Llama-3-8B-Instruct-262k-quantum   # prepared by tokenizer/prepare_quantum_model.py
 trust_remote_code: true
 resize_vocab: true                        # 128256 → 128395 (extended quantum-native tokenizer)
 
@@ -45,14 +46,14 @@ disable_shuffling: true                   # Table II = Disabled — preserve cur
 # sends/parses at inference, so the merged model can serve all three agents
 # from one weight checkpoint.
 dataset: Grover_Agent1_2_7_MMS,Grover_Agent2_2_7_MMS,Grover_Agent3_2_7_MMS
-dataset_dir: /home/quantum-user/radowan/final_year_project/LLaMA-Factory/data
+dataset_dir: data
 template: llama3                          # Table II
 cutoff_len: 4000                          # Table II = 4000
 overwrite_cache: true
 preprocessing_num_workers: 16
 
 ### output
-output_dir: /home/quantum-user/radowan/final_year_project/saves/Llama-3-8B-Instruct-262k/lora/Phase4_alpha32
+output_dir: ../saves/Llama-3-8B-Instruct-262k/lora/Phase4_alpha32
 logging_steps: 10
 save_steps: 50                            # Table II = every 50 steps
 save_total_limit: 2

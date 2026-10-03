@@ -4,22 +4,21 @@ Generate and save all evaluation circuits to disk before running any phase evalu
 This script uses venv-eval (Qiskit). Run it once per mode to pre-generate QASM
 files and a manifest JSON that the evaluation pipeline reads without needing Qiskit.
 
-Usage:
-  # Phase 1 — strict (fresh unseen circuits for in-training n)
-  python evaluation/generate_eval_circuits.py --mode full   --n_min 2 --n_max 9  --circuit_source strict
-  python evaluation/generate_eval_circuits.py --mode oracle --n_min 2 --n_max 20 --circuit_source strict
+Usage (from Reproduce Results/evaluation_pipeline, with venv-eval and WORK set):
+  # All published results use --circuit_source paper (circuits drawn from data_MMS)
+  python generate_eval_circuits.py --mode full   --n_min 2 --n_max 9  --circuit_source paper   # Phase 1
+  python generate_eval_circuits.py --mode full   --n_min 2 --n_max 19 --circuit_source paper   # Phases 2-4
+  python generate_eval_circuits.py --mode oracle --n_min 2 --n_max 20 --circuit_source paper   # Phases 1-2
 
-  # Phase 1 — paper (data_MMS circuits for all n, matching published evaluation)
-  python evaluation/generate_eval_circuits.py --mode full   --n_min 2 --n_max 9  --circuit_source paper
-  python evaluation/generate_eval_circuits.py --mode oracle --n_min 2 --n_max 20 --circuit_source paper
+  --circuit_source strict generates fresh, unseen circuits for the in-training n
+  instead; it is not used for the published results.
 
-  # Phase 2 (full circuit only, extended range)
-  python evaluation/generate_eval_circuits.py --mode full --n_min 2 --n_max 19 --circuit_source strict
+Selection is deterministic (sorted file list + seed 42), so the same data_MMS
+gives the same manifests on any machine.
 
 Output:
-  evaluation/circuit_manifests/circuits_{mode}_{n_min}_{n_max}_{circuit_source}.json
-  evaluation/data_MMS_eval/{circuit_source}/grover_n{n}/*.qasm
-    (strict mode only; paper mode reads directly from data_MMS)
+  $WORK/eval_circuits/manifests/circuits_{mode}_{n_min}_{n_max}_{circuit_source}.json
+  $WORK/eval_circuits/data_MMS_eval/{mode}/grover_n{n}/*.qasm   (strict only)
 """
 
 import argparse
@@ -32,8 +31,7 @@ _EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, _EVAL_DIR)
 
 from circuit_utils import get_circuits, target_circuit_count
-
-_MANIFESTS_DIR = os.path.join(_EVAL_DIR, "circuit_manifests")
+from workdir import manifests_dir
 
 
 def build_manifest(mode: str, n_min: int, n_max: int, seed: int,
@@ -82,12 +80,12 @@ def main():
                         help="'strict': fresh unseen circuits for in-training n (default); "
                              "'paper': data_MMS circuits for all n (matches published evaluation)")
     parser.add_argument("--output",         type=str, default=None,
-                        help="Output manifest path (default: auto-named in evaluation/circuit_manifests/)")
+                        help="Output manifest path (default: auto-named in $WORK/eval_circuits/manifests/)")
     args = parser.parse_args()
 
-    os.makedirs(_MANIFESTS_DIR, exist_ok=True)
+    os.makedirs(manifests_dir(), exist_ok=True)
     out = args.output or os.path.join(
-        _MANIFESTS_DIR,
+        manifests_dir(),
         f"circuits_{args.mode}_{args.n_min}_{args.n_max}_{args.circuit_source}.json",
     )
 

@@ -1,15 +1,18 @@
 """
-Plot evaluation results for Phases 1 and 2, matching the style of [1].
+Plot evaluation results (SA/CF, CR/SRR, RET), matching the style of [1].
 
-Usage:
-  python evaluation/plot_results.py --phase 1 --mode full
-  python evaluation/plot_results.py --phase 1 --mode oracle
-  python evaluation/plot_results.py --phase 2 --mode full
+Used for Phases 1, 2 and 4 (Phase 4 results are written in the Phase 2 schema,
+so they are plotted with --phase 2).
 
-Plots saved to evaluation/phase-{N}/results/:
-  sa_cf_{mode}.png   — SA (a) and CF (b) side-by-side with error bars   [1] Fig 4/5
-  cr_srr.png         — Compression Ratio (a) and SRR (b) side-by-side    [1] Supp Fig 6
-  ret.png            — Relative Execution Time, log y-axis               [1] Fig 6
+Usage (from Reproduce Results/evaluation_pipeline):
+  python plot_results.py --phase 1 --mode full   --circuit_source paper --cf_key both --results_dir $WORK/results/phase-1
+  python plot_results.py --phase 1 --mode oracle --circuit_source paper --cf_key both --results_dir $WORK/results/phase-1
+  python plot_results.py --phase 2 --mode full   --circuit_source paper --cf_key both --results_dir <results dir>
+
+Plots are written into --results_dir:
+  sa_cf_{mode}_{source}.png  — SA (a) and CF (b) side-by-side with error bars   [1] Fig 4/5
+  cr_srr_{source}.png        — Compression Ratio (a) and SRR (b) side-by-side    [1] Supp Fig 6
+  ret_{source}.png           — Relative Execution Time, log y-axis               [1] Fig 6
 """
 
 import argparse
@@ -517,9 +520,8 @@ def main():
     parser.add_argument("--phase",          type=int, choices=[1, 2], required=True)
     parser.add_argument("--mode",           choices=["full", "oracle"], required=True)
     parser.add_argument("--circuit_source", choices=["strict", "paper"], default="strict")
-    parser.add_argument("--results_dir", type=str, default=None,
-                        help="Directory to read results from and write plots to "
-                             "(default: the phase's results/ directory)")
+    parser.add_argument("--results_dir", type=str, required=True,
+                        help="Directory to read results from and write plots to")
     parser.add_argument(
         "--cf_key", choices=["cf", "cf_renorm", "both"], default="cf",
         help="Which CF series to plot from the per-n results JSON: 'cf' (raw, "

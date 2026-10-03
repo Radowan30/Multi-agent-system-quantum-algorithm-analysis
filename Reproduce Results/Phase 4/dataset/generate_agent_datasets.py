@@ -38,14 +38,16 @@ two intentional deviations from the Phase 3 prompt scaffolding:
   - no echoed examples / instruction prose (the model learns the format
     from the training distribution alone)
 
-Run:
-    python "Multi Agent System Phase 4/dataset/generate_agent_datasets.py" \\
-        --data_dir GroverGPT-plus/data_MMS \\
-        --out_dir  "Multi Agent System Phase 4/dataset"
+Run (defaults: --data_dir $WORK/data_MMS, --out_dir this folder):
+    python generate_agent_datasets.py [--data_dir <data_MMS>] [--out_dir <dir>]
+
+The output is deterministic; with the GroverGPT+ data_MMS it reproduces the
+three Grover_AgentN_2_7_MMS.json files shipped next to this script.
 """
 
 import argparse
 import json
+import os
 import math
 import re
 from pathlib import Path
@@ -341,11 +343,16 @@ def _iter_qasm_in_range(data_dir: Path, n_min: int, n_max: int):
 def main():
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--data_dir", default="GroverGPT-plus/data_MMS",
-                    help="Root QASM corpus (contains grover_n2/, grover_n3/, ...)")
-    ap.add_argument("--out_dir", default="Multi Agent System Phase 4/dataset",
-                    help="Where to write Grover_AgentN_*.json")
+    ap.add_argument("--data_dir", default=None,
+                    help="Root QASM corpus (contains grover_n2/, grover_n3/, ...); "
+                         "default: $WORK/data_MMS")
+    ap.add_argument("--out_dir", default=str(Path(__file__).resolve().parent),
+                    help="Where to write Grover_AgentN_*.json (default: this folder)")
     args = ap.parse_args()
+    if args.data_dir is None:
+        if not os.environ.get("WORK"):
+            ap.error("pass --data_dir, or set WORK so the default $WORK/data_MMS can be used")
+        args.data_dir = os.path.join(os.environ["WORK"], "data_MMS")
 
     data_dir = Path(args.data_dir).resolve()
     out_dir = Path(args.out_dir).resolve()

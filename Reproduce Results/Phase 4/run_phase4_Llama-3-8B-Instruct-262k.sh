@@ -1,139 +1,25 @@
 #!/bin/bash
-# Phase 4 pipeline — alpha=32, single-session joint training of all three
-# agent datasets, single merged model, with one approval gate after the
-# smoke test before the full eval.
+# Phase 4 — fine-tune Llama-3-8B-Instruct-262k on the three agent-specific datasets (jointly, one
+# model per base) and merge the adapter.
 #
-# Pre-approved flow (no gates):
-#   1. Train (3 agent datasets concatenated, n=2..7, 10 epochs)
-#   2. Merge LoRA → standalone model
-#   3. Smoke-test: 3 circuits (EASY n=3, MID n=8, HARD n=15) via vanilla orchestrator
+# Prerequisites: $WORK/models/Llama-3-8B-Instruct-262k-quantum (tokenizer/prepare_quantum_model.py)
+# and Grover_Agent{1,2,3}_2_7_MMS.json copied into $WORK/LLaMA-Factory/data/ and
+# registered (README section 5).
 #
-# GATE — waits for /tmp/phase4_alpha32_gate1.go before proceeding to full eval
-#
-# Post-gate (after approval):
-#   4. Full eval — 51 circuits (1 per (n,k), n=2..19) via vanilla orchestrator
-#
-# Output:
-#   saves/Llama-3-8B-Instruct-262k/lora/Phase4_alpha32/    LoRA adapter
-#   saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32/  merged model
-#   evaluation/phase-4/smoke/                              smoke results
-#   evaluation/phase-4/full/                               full eval results
-#
-# Gate mechanism — to approve the full eval after smoke completes:
-#   touch /tmp/phase4_alpha32_gate1.go
-#
-# Run:
-#   bash "Multi Agent System Phase 4/run_phase4.sh" \
-#       > /tmp/phase4_alpha32.log 2>&1 &
+# Usage:  bash "Reproduce Results/Phase 4/run_phase4_Llama-3-8B-Instruct-262k.sh"
+# Output: $WORK/saves/Llama-3-8B-Instruct-262k/{lora,merged}/Phase4_alpha32
+# Then evaluate with run_paper_eval_Llama-3-8B-Instruct-262k.sh.
 
 set -euo pipefail
+source "$(dirname "${BASH_SOURCE[0]}")/../paths.sh"
+HERE="$REPRO_DIR/Phase 4"
 
-PROJ=/home/quantum-user/radowan/final_year_project
-PHASE4_DIR="$PROJ/Multi Agent System Phase 4"
-LF="$PROJ/LLaMA-Factory"
-
-PY_EVAL="$PROJ/venv-eval/bin/python"
-LF_CLI="$PROJ/venv-train/bin/llamafactory-cli"
-
-TRAIN_YAML="$PHASE4_DIR/train_phase4_alpha32.yaml"
-MERGE_YAML="$PHASE4_DIR/merge_phase4_alpha32.yaml"
-MERGED="$PROJ/saves/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32"
-
-SMOKE_DIR="$PROJ/evaluation/phase-4/smoke"
-FULL_DIR="$PROJ/evaluation/phase-4/full"
-
-# Reuse Phase 3's 51-circuit JSONL so Phase 4 full-eval results are
-# directly comparable to the Phase 3 four-model preliminary results.
-FULL_CIRCUITS_JSONL="$PROJ/evaluation/phase-3/preliminary/circuits.jsonl"
-
-GATE1_DONE=/tmp/phase4_alpha32_gate1.done
-GATE1_GO=/tmp/phase4_alpha32_gate1.go
-
-rm -f "$GATE1_DONE" "$GATE1_GO"
-
-section() {
-    echo
-    echo "================================================================"
-    echo "  $*"
-    echo "================================================================"
-}
-
-cd "$PROJ"
-
-# ═══════════════════════════════════════════════════════════════════════════
-# 1. Train
-# ═══════════════════════════════════════════════════════════════════════════
-
-section "Phase 4 alpha32 — training"
-cd "$LF" && "$LF_CLI" train "$TRAIN_YAML"
-cd "$PROJ"
-
-# ═══════════════════════════════════════════════════════════════════════════
-# 2. Merge
-# ═══════════════════════════════════════════════════════════════════════════
-
-section "Phase 4 alpha32 — merging adapter"
-cd "$LF" && "$LF_CLI" export "$MERGE_YAML"
-cd "$PROJ"
-
-# ═══════════════════════════════════════════════════════════════════════════
-# 3. Smoke test — 3 circuits (EASY n=3, MID n=8, HARD n=15)
-# ═══════════════════════════════════════════════════════════════════════════
-
-section "Phase 4 alpha32 — building smoke circuits"
-mkdir -p "$SMOKE_DIR"
-"$PY_EVAL" "$PHASE4_DIR/build_smoke_circuits.py" --out_dir "$SMOKE_DIR"
-
-section "Phase 4 alpha32 — smoke eval (3 circuits, vanilla orchestrator)"
-"$PY_EVAL" "$PHASE4_DIR/run_eval.py" \
-    --model_path "$MERGED" \
-    --circuits_jsonl "$SMOKE_DIR/circuits.jsonl" \
-    --output_dir "$SMOKE_DIR" \
-    --orchestrator vanilla \
-    --max_model_len 150000 \
-    --gpu_memory_utilization 0.90 \
-    --max_tokens 8192 \
-    --max_concurrency 3 \
-    --label "phase4_alpha32_smoke"
-
-# ═══════════════════════════════════════════════════════════════════════════
-# Gate — wait for approval before running full eval
-# ═══════════════════════════════════════════════════════════════════════════
-
-section "GATE — train + merge + smoke complete; awaiting approval for full eval"
-echo "Smoke results at: $SMOKE_DIR"
-echo "Finished at: $(date '+%Y-%m-%d %H:%M:%S')"
-echo
-echo "Remaining steps if approved: full eval on 51 circuits (Phase 3 preliminary set)."
-echo
-echo "To approve and continue, run:"
-echo "    touch $GATE1_GO"
-echo
-echo "Polling every 30 seconds for the approval file..."
-touch "$GATE1_DONE"
-while [ ! -f "$GATE1_GO" ]; do
-    sleep 30
+require "$MODELS/Llama-3-8B-Instruct-262k-quantum/tokenizer.json" \
+    "run tokenizer/prepare_quantum_model.py for Llama-3-8B-Instruct-262k"
+for i in 1 2 3; do
+    require "$LLAMA_FACTORY/data/Grover_Agent${i}_2_7_MMS.json" "copy Phase 4/dataset/*.json into LLaMA-Factory/data (README section 5)"
 done
-rm -f "$GATE1_GO"
-echo "Approved at: $(date '+%Y-%m-%d %H:%M:%S'). Proceeding with full eval."
 
-# ═══════════════════════════════════════════════════════════════════════════
-# 4. Full eval — 51 circuits via vanilla orchestrator
-# ═══════════════════════════════════════════════════════════════════════════
-
-section "Phase 4 alpha32 — full eval (51 circuits, vanilla orchestrator)"
-mkdir -p "$FULL_DIR"
-"$PY_EVAL" "$PHASE4_DIR/run_eval.py" \
-    --model_path "$MERGED" \
-    --circuits_jsonl "$FULL_CIRCUITS_JSONL" \
-    --output_dir "$FULL_DIR" \
-    --orchestrator vanilla \
-    --max_model_len 150000 \
-    --gpu_memory_utilization 0.90 \
-    --max_tokens 8192 \
-    --max_concurrency 8 \
-    --label "phase4_alpha32_full"
-
-section "Phase 4 alpha32 — DONE"
-echo "Train + Merge + Smoke + Full eval complete."
-echo "Finished at: $(date '+%Y-%m-%d %H:%M:%S')"
+train_and_merge "$HERE/train_Llama-3-8B-Instruct-262k.yaml" "$HERE/merge_Llama-3-8B-Instruct-262k.yaml"
+check_chat_template "$SAVES/Llama-3-8B-Instruct-262k/merged/Phase4_alpha32"
+section "Phase 4 training (Llama-3-8B-Instruct-262k) done"

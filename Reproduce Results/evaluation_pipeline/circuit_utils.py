@@ -11,9 +11,9 @@ Two evaluation runs (Research_Plan.md Section 3.3):
 
 Circuit sources (fresh vs data_MMS):
   Full circuit  n=2-7  (in training) → generate fresh, save to data_MMS_eval/
-  Full circuit  n=8-9  (OOD)         → load from GroverGPT-plus/data_MMS/
+  Full circuit  n=8-9  (OOD)         → load from $WORK/data_MMS/
   Oracle-only   n=2-10 (in training) → generate fresh, save to data_MMS_eval/
-  Oracle-only   n=11-20 (OOD)        → load from GroverGPT-plus/data_MMS/
+  Oracle-only   n=11-20 (OOD)        → load from $WORK/data_MMS/
 
 The same training-range boundaries apply in Phases 2 and 3. As for evaluation during phases 2 and 3, the Full circuit n will range from 2-19 qubits (because we are using the LLaMA 3.1 8B Instruct model which has enough context window to handle up to 19 qubits), and we will evaluate the Oracle-only circuits for n=2-20 qubits only in Phases 1 and 2.
 
@@ -32,9 +32,7 @@ from qiskit import QuantumCircuit
 from qiskit.circuit.library import MCMT, ZGate
 import qiskit.qasm3 as qasm3
 
-_EVAL_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_MMS_EVAL_DIR = os.path.join(_EVAL_DIR, "data_MMS_eval")
-DATA_MMS_DIR = os.path.join(_EVAL_DIR, "..", "GroverGPT-plus", "data_MMS")
+from workdir import data_mms_dir, data_mms_eval_dir  # $WORK/data_MMS, $WORK/eval_circuits/data_MMS_eval
 
 # Evaluation n ranges (Research_Plan Section 3.3)
 FULL_CIRCUIT_N_MIN, FULL_CIRCUIT_N_MAX = 2, 9
@@ -236,7 +234,7 @@ def _filename_to_marked_states(fname: str) -> List[str]:
 
 def _data_mms_combos(n: int) -> set:
     """Return the frozensets of marked states present in data_MMS for n."""
-    folder = os.path.join(DATA_MMS_DIR, f"grover_n{n}")
+    folder = os.path.join(data_mms_dir(), f"grover_n{n}")
     if not os.path.isdir(folder):
         return set()
     seen = set()
@@ -283,7 +281,7 @@ def generate_and_save_fresh_circuits(n: int, mode: str, seed: int = 42) -> List[
            'oracle' → Oracle gate definition block (matching training format)
     seed : random seed for reproducible sampling when unseen > _MAX_UNSEEN_PER_K
     """
-    out_dir = os.path.join(DATA_MMS_EVAL_DIR, mode, f"grover_n{n}")
+    out_dir = os.path.join(data_mms_eval_dir(), mode, f"grover_n{n}")
     os.makedirs(out_dir, exist_ok=True)
 
     N = 2 ** n
@@ -375,7 +373,7 @@ def load_data_mms_circuits(n: int, mode: str, seed: int = 42) -> List[Dict]:
     Selects target_circuit_count(n) files at random (reproducible via seed).
     For mode='oracle', the oracle subcircuit is extracted from the full QASM.
     """
-    folder = os.path.join(DATA_MMS_DIR, f"grover_n{n}")
+    folder = os.path.join(data_mms_dir(), f"grover_n{n}")
     if not os.path.isdir(folder):
         raise FileNotFoundError(f"data_MMS folder not found: {folder}")
 
@@ -410,7 +408,7 @@ def extract_oracle_qasm(full_qasm: str) -> str:
 
     Returns just the 'gate Oracle ... { ... }' block — no QASM header, no
     standalone circuit wrapper.  This matches the oracle input format used
-    during training (see GroverGPT-plus/dataset_generate_MMS.py).
+    during training (see dataset_generate_MMS.py).
 
     Used both by generate_oracle_only_qasm (fresh circuits) and
     load_data_mms_circuits (OOD circuits loaded from data_MMS).

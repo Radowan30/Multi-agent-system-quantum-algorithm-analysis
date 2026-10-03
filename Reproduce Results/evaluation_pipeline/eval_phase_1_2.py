@@ -12,7 +12,7 @@ not the model) and requires a separate pipeline — eval_phase_3.py.
 
 How to use:
   Import run_phase() into a phase-specific run_eval.py and pass the phase config.
-  See evaluation/phase-1/run_eval.py for an example.
+  See run_eval_phase1.py for an example.
 """
 
 import glob
@@ -70,7 +70,7 @@ def run_phase(
     max_model_len          : context window — 8192 for Phase 1, 128000 for Phase 2
     n_ret_circuits         : circuits sampled per n for RET timing (single-instance)
     ret_seed               : RNG seed for reproducible RET circuit sampling
-    ret_circuit_dir        : data_MMS dir (default: <project>/GroverGPT-plus/data_MMS)
+    ret_circuit_dir        : data_MMS dir (default: $WORK/data_MMS)
 
     Returns
     -------
@@ -279,9 +279,8 @@ def _sample_ret_circuits(
     degenerates to a one-state distribution.
     """
     if ret_circuit_dir is None:
-        ret_circuit_dir = os.path.join(
-            os.path.dirname(_EVAL_DIR), "GroverGPT-plus", "data_MMS"
-        )
+        from workdir import data_mms_dir
+        ret_circuit_dir = data_mms_dir()
     pool = sorted(glob.glob(os.path.join(ret_circuit_dir, f"grover_n{n}", "*.qasm")))
     if not pool:
         return []

@@ -37,14 +37,14 @@ Each folder has its own `README.md` with detailed instructions.
 1. **Phase 1 — Baseline.** Recreate the `GroverGPT+` model by fine-tuning LLaMA 3 8B on the GroverGPT+ dataset.
 2. **Phase 2 — Larger context.** Fine-tune two larger-context LLMs (Llama-3-8B-Instruct-262k and LLaMA 3.1 8B) with the same recipe so circuits up to n = 19 can fit.
 3. **Phase 3 — Multi-agent (prompts only).** Split the analysis across three specialised agents (Oracle Extractor → Marked-State Identifier → Probability Distribution) via prompt engineering, evaluated on four LLM variations.
-4. **Phase 4 — Multi-agent (fine-tuned).** Fine-tune each agent on its own sub-task using a programmatically augmented dataset.
+4. **Phase 4 — Multi-agent (fine-tuned).** Fine-tune one model per base on three agent-specific datasets, generated programmatically from the GroverGPT+ data with more detailed reasoning traces. An ablation trains a single monolithic model on the same data.
 
 The headline result is in **Phase 4**: in-distribution Search Accuracy reaches
-1.0 with near-zero variance for both base models. The out-of-distribution
-performance still degrades — the multi-agent system does not, on its own,
-solve out-of-distribution generalisation. The per-agent reasoning traces are
-also richer and easier for a human reader to follow than the monolithic
-baseline.
+1.0 with near-zero variance for both base models. The monolithic ablation
+reaches the same scores at n = 3–7, so this in-distribution gain comes from the more
+detailed reasoning traces rather than from the split into agents.
+Out-of-distribution performance still degrades; neither the new traces nor the
+multi-agent system solves out-of-distribution generalisation.
 
 ## Acknowledgements
 

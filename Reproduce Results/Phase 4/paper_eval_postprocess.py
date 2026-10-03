@@ -59,8 +59,7 @@ from typing import Dict, List, Optional, Tuple
 
 _HERE = Path(__file__).resolve().parent
 _PROJECT = _HERE.parent
-sys.path.insert(0, str(_PROJECT / "evaluation"))
-sys.path.insert(0, str(_PROJECT / "GroverGPT-plus"))
+sys.path.insert(0, str(_PROJECT / "evaluation_pipeline"))
 
 from oracle_extraction_accuracy import extract_oracle_body, normalize_oracle_block  # noqa: E402
 

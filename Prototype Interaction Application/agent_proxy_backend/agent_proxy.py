@@ -64,11 +64,9 @@ from fastapi.responses import JSONResponse, StreamingResponse
 import uvicorn
 from openai import AsyncOpenAI
 
-# ─── Reuse Phase 3 prompts + parsers (Phase 4 prompts are minimal-identity) ───
+# ─── Phase 4 prompts (minimal identity) + Phase 3 parsers, both copied here ───
 _HERE = Path(__file__).resolve().parent
-_PHASE3 = _HERE.parent / "Multi Agent System Phase 3"
-sys.path.insert(0, str(_HERE))      # Phase 4 prompts first (identity)
-sys.path.insert(0, str(_PHASE3))    # then Phase 3 (parsers, etc.)
+sys.path.insert(0, str(_HERE))
 
 from prompts import (  # noqa: E402  — Phase 4 minimal identity prompts
     build_agent1_prompt,
